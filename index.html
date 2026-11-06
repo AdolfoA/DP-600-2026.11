@@ -112,6 +112,7 @@ footer{max-width:980px;margin:0 auto;padding:0 20px 30px;color:var(--mut);font-s
 <footer>Banco de preguntas redactado para práctica (no son preguntas reales del examen). El temario y la teoría siguen la estructura oficial de Microsoft Learn (resúmenes propios). Tu progreso se guarda solo en este navegador.</footer>
 
 <script src="data/temario.js"></script>
+<script src="data/temario_es.js"></script>
 <script src="data/preguntas.js"></script>
 <script src="data/teoria_lakehouse.js"></script>
 <script src="data/teoria_warehouse.js"></script>
@@ -176,10 +177,13 @@ function h(tag, attrs, ...kids){
 }
 const shuffle = a => { a = a.slice(); for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
 const pct = (a,b) => b ? Math.round(100*a/b) : 0;
+(function(){ const E=window.TEMARIO_ES; if(!E) return;
+  T.dominios.forEach(d=>{ d.en=d.nombre; d.nombre=E.dom[d.id]||d.nombre;
+    d.secciones.forEach(s=>{ s.en=s.nombre; s.nombre=E.sec[s.id]||s.nombre; s.habilidadesEn=s.habilidades.slice(); s.habilidades=s.habilidades.map((t,i)=>E.hab[s.id+"."+(i+1)]||t); }); }); })();
 const doms = T.dominios;
 const domById = id => doms.find(d => d.id === id);
 const secs = doms.flatMap(d => d.secciones.map(s => ({...s, dom: d.id})));
-const skillList = doms.flatMap(d => d.secciones.flatMap(s => s.habilidades.map((t,i) => ({id: s.id + "." + (i+1), texto: t, sec: s.id, dom: d.id}))));
+const skillList = doms.flatMap(d => d.secciones.flatMap(s => s.habilidades.map((t,i) => ({id: s.id + "." + (i+1), texto: t, en: (s.habilidadesEn||s.habilidades)[i], sec: s.id, dom: d.id}))));
 const skState = id => (S.skills[id] && S.skills[id].e) || 0;
 
 function accuracy(filter){
@@ -212,13 +216,13 @@ function vTemario(){
     const sk = skillList.filter(s => s.dom===d.id);
     const dom = sk.filter(s => skState(s.id)===2).length;
     const card = h("div",{class:"card"},
-      h("div",{class:"dom-h"}, h("h2",null,d.nombre), h("span",{class:"peso"},"Peso "+d.peso)),
+      h("div",{class:"dom-h"}, h("h2",null,d.nombre), h("span",{class:"peso"},"Peso "+d.peso)), d.en&&d.en!==d.nombre?h("div",{class:"mut",style:"margin:-4px 0 6px;font-size:12px"},d.en):null,
       h("div",{class:"row"}, h("div",{class:"bar sp"},h("i",{style:"width:"+pct(dom,sk.length)+"%"})), h("span",{class:"mut"},dom+"/"+sk.length+" dominadas"))
     );
     d.secciones.forEach(s => {
       const nq = Q.filter(q => q.seccion===s.id).length;
       const det = h("details",{class:"sec"});
-      det.append(h("summary",null, s.nombre, h("span",{class:"tag"}, nq+" preguntas")));
+      det.append(h("summary",null, s.nombre, h("span",{class:"tag"}, nq+" preguntas"), s.en&&s.en!==s.nombre?h("span",{class:"mut",style:"font-size:12px;margin-left:8px"},s.en):null));
       det.append(h("ul",{class:"notas"}, s.notas.map(n => h("li",null,n))));
       s.habilidades.forEach((t,i) => {
         const id = s.id+"."+(i+1);
@@ -231,9 +235,9 @@ function vTemario(){
         noteBtn.onclick = () => { note.style.display = note.style.display==="none" ? "block":"none"; };
         const mods = M.filter(m => m.habilidades.includes(id));
         det.append(h("div",{class:"skill"}, btn,
-          h("div",{class:"t"}, t,
+          h("div",{class:"t"}, t, (s.habilidadesEn&&s.habilidadesEn[i]!==t)?h("div",{class:"mut",style:"font-size:12px"},s.habilidadesEn[i]):null,
             h("div",{class:"acts"},
-              h("a",{href:"https://learn.microsoft.com/en-us/search/?terms="+encodeURIComponent(t),target:"_blank",rel:"noopener"},"📖 Buscar en Learn"), noteBtn,
+              h("a",{href:"https://learn.microsoft.com/en-us/search/?terms="+encodeURIComponent((s.habilidadesEn||s.habilidades)[i]),target:"_blank",rel:"noopener"},"📖 Buscar en Learn"), noteBtn,
               mods.map(m => h("span",{onclick:()=>go("teoria",m.id),title:m.titulo},"📚 "+m.id.toUpperCase()))),
             note)));
       });
@@ -292,26 +296,26 @@ const FUENTES = [
     ["Página del examen DP-600", "https://learn.microsoft.com/en-us/credentials/certifications/exams/dp-600"],
     ["Certificación Fabric Analytics Engineer Associate", "https://learn.microsoft.com/en-us/credentials/certifications/fabric-analytics-engineer-associate/"],
     ["Guía de estudio oficial (habilidades evaluadas)", "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/dp-600"],
-    ["Practice Assessment nueva (AI Skills Navigator)", "http://aka.ms/DP600-PA"],
-    ["Practice Assessment anterior (Learn, ya no se actualiza)", "https://aka.ms/DP600-LearnPA"],
-    ["Exam Sandbox (demo de la interfaz del examen)", "https://go.microsoft.com/fwlink/?linkid=2226877"],
+    ["Evaluación de práctica nueva (AI Skills Navigator)", "http://aka.ms/DP600-PA"],
+    ["Evaluación de práctica anterior (Learn, ya no se actualiza)", "https://aka.ms/DP600-LearnPA"],
+    ["Exam Sandbox: demo de la interfaz del examen", "https://go.microsoft.com/fwlink/?linkid=2226877"],
     ["Videos de preparación del examen", "https://aka.ms/DP600-ExamPrep"]
   ]],
   ["Course Syllabus oficial · DP-600T00-A (base de la Teoría)", [
-    ["Curso: Implement analytics solutions using Microsoft Fabric (DP-600T00)", "https://learn.microsoft.com/en-us/training/courses/dp-600t00/"],
-    ["Ruta 1 · Explore analytics data stores in Microsoft Fabric", "https://learn.microsoft.com/en-us/training/paths/explore-analytics-data-stores/"],
-    ["Ruta 2 · Design and transform analytics data in Microsoft Fabric", "https://learn.microsoft.com/en-us/training/paths/design-transform-analytics-data/"],
-    ["Ruta 3 · Design and manage semantic models in Microsoft Fabric", "https://learn.microsoft.com/en-us/training/paths/design-manage-semantic-models-fabric/"],
-    ["Ruta 4 · Prepare AI-ready analytics data in Microsoft Fabric", "https://learn.microsoft.com/en-us/training/paths/prepare-ai-ready-analytics-data/"],
-    ["Ruta 5 · Secure and govern analytics data in Microsoft Fabric", "https://learn.microsoft.com/en-us/training/paths/secure-govern-analytics-data/"]
+    ["Curso DP-600T00: Implementar soluciones de analítica con Microsoft Fabric", "https://learn.microsoft.com/en-us/training/courses/dp-600t00/"],
+    ["Ruta 1 · Explora los almacenes de datos analíticos en Microsoft Fabric", "https://learn.microsoft.com/en-us/training/paths/explore-analytics-data-stores/"],
+    ["Ruta 2 · Diseña y transforma datos analíticos en Microsoft Fabric", "https://learn.microsoft.com/en-us/training/paths/design-transform-analytics-data/"],
+    ["Ruta 3 · Diseña y gestiona modelos semánticos en Microsoft Fabric", "https://learn.microsoft.com/en-us/training/paths/design-manage-semantic-models-fabric/"],
+    ["Ruta 4 · Prepara datos analíticos listos para IA en Microsoft Fabric", "https://learn.microsoft.com/en-us/training/paths/prepare-ai-ready-analytics-data/"],
+    ["Ruta 5 · Protege y gestiona los datos analíticos en Microsoft Fabric", "https://learn.microsoft.com/en-us/training/paths/secure-govern-analytics-data/"]
   ]],
   ["Rutas anteriores de Learn usadas como material de apoyo", [
-    ["Get started with Microsoft Fabric (base recomendada)", "https://learn.microsoft.com/en-us/training/paths/get-started-fabric/"],
-    ["Implement a Lakehouse with Microsoft Fabric", "https://learn.microsoft.com/en-us/training/paths/implement-lakehouse-microsoft-fabric/"],
-    ["Implement a data warehouse with Microsoft Fabric", "https://learn.microsoft.com/en-us/training/paths/work-with-data-warehouses-using-microsoft-fabric/"],
-    ["Work with semantic models in Microsoft Fabric", "https://learn.microsoft.com/en-us/training/paths/work-semantic-models-microsoft-fabric/"],
-    ["Manage a Microsoft Fabric environment", "https://learn.microsoft.com/en-us/training/paths/manage-microsoft-fabric-environment/"],
-    ["Secure and govern analytics data in Microsoft Fabric", "https://learn.microsoft.com/en-us/training/paths/secure-govern-analytics-data/"]
+    ["Primeros pasos con Microsoft Fabric (base recomendada)", "https://learn.microsoft.com/en-us/training/paths/get-started-fabric/"],
+    ["Implementar un lakehouse con Microsoft Fabric", "https://learn.microsoft.com/en-us/training/paths/implement-lakehouse-microsoft-fabric/"],
+    ["Implementar un data warehouse con Microsoft Fabric", "https://learn.microsoft.com/en-us/training/paths/work-with-data-warehouses-using-microsoft-fabric/"],
+    ["Trabajar con modelos semánticos en Microsoft Fabric", "https://learn.microsoft.com/en-us/training/paths/work-semantic-models-microsoft-fabric/"],
+    ["Gestionar un entorno de Microsoft Fabric", "https://learn.microsoft.com/en-us/training/paths/manage-microsoft-fabric-environment/"],
+    ["Proteger y gobernar los datos analíticos en Microsoft Fabric", "https://learn.microsoft.com/en-us/training/paths/secure-govern-analytics-data/"]
   ]],
   ["Documentación de referencia", [
     ["Documentación de Microsoft Fabric", "https://learn.microsoft.com/en-us/fabric/"],
@@ -510,7 +514,7 @@ function buildIdx(){
   IDX = [];
   M.forEach(m=>m.unidades.forEach((u,i)=>{ const body=u.c.map(flat).join(" "); IDX.push({g:"Teoría",t:tr(u.t),sub:m.id.toUpperCase()+" · "+tr(m.titulo),txt:body,key:norm(tr(u.t)+" "+u.t+" "+body+" "+tr(m.titulo)),go:()=>{ window.__openUnit=i; go("teoria",m.id); }}); }));
   M.forEach(m=>IDX.push({g:"Módulos",t:m.id.toUpperCase()+" · "+tr(m.titulo),sub:m.ruta,txt:m.objetivos.join(" "),key:norm(m.titulo+" "+tr(m.titulo)+" "+m.objetivos.join(" ")),go:()=>go("teoria",m.id)}));
-  skillList.forEach(k=>IDX.push({g:"Habilidades del examen",t:k.texto,sub:"Temario · sección "+k.sec,txt:"",key:norm(k.texto),go:()=>go("temario")}));
+  skillList.forEach(k=>IDX.push({g:"Habilidades del examen",t:k.texto,sub:"Temario · sección "+k.sec,txt:k.en||"",key:norm(k.texto+" "+(k.en||"")),go:()=>go("temario")}));
   Q.forEach(q=>IDX.push({g:"Preguntas",t:q.pregunta,sub:"Práctica",txt:q.explicacion||"",key:norm(q.pregunta+" "+q.opciones.join(" ")+" "+(q.explicacion||"")),go:()=>{ pFilter={dom:q.dominio,sec:q.seccion,modo:"todas"}; go("practica"); }}));
 }
 function snip(txt, words){
