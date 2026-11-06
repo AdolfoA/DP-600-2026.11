@@ -108,10 +108,23 @@ footer{max-width:980px;margin:0 auto;padding:0 20px 30px;color:var(--mut);font-s
 <script src="data/teoria_semantico.js"></script>
 <script src="data/teoria_gestion.js"></script>
 <script src="data/teoria_complementos.js"></script>
+<script src="data/teoria_syllabus.js"></script>
 <script>
 (function(){
 "use strict";
-const T = window.TEMARIO, Q = window.PREGUNTAS, M = window.TEORIA || [];
+const SYLLABUS = [
+  ["Ruta 1 · Explora los almacenes de datos analíticos en Microsoft Fabric","https://learn.microsoft.com/en-us/training/paths/explore-analytics-data-stores/",["m01","m24","m02","m08","m25"]],
+  ["Ruta 2 · Diseña y transforma datos analíticos en Microsoft Fabric","https://learn.microsoft.com/en-us/training/paths/design-transform-analytics-data/",["m26","m27","m28","m29","m30"]],
+  ["Ruta 3 · Diseña y gestiona modelos semánticos en Microsoft Fabric","https://learn.microsoft.com/en-us/training/paths/design-manage-semantic-models-fabric/",["m14","m15","m16","m17","m18"]],
+  ["Ruta 4 · Prepara datos analíticos listos para IA en Microsoft Fabric","https://learn.microsoft.com/en-us/training/paths/prepare-ai-ready-analytics-data/",["m31","m32","m33"]],
+  ["Ruta 5 · Protege y gestiona los datos analíticos en Microsoft Fabric","https://learn.microsoft.com/en-us/training/paths/secure-govern-analytics-data/",["m21","m13","m22"]]
+];
+const APOYO = "Material de apoyo (fuera del Course Syllabus, pero útil para las habilidades del examen)";
+const T = window.TEMARIO, Q = window.PREGUNTAS;
+let M = window.TEORIA || [];
+(function(){ const ord=[]; SYLLABUS.forEach(([r,u,ids])=>ids.forEach(id=>{const m=M.find(x=>x.id===id); if(m){m.ruta=r; m.rutaUrl=u; ord.push(m);}}));
+  const rest=M.filter(m=>!ord.includes(m)); rest.forEach(m=>{m.ruta=APOYO;}); M=ord.concat(rest);
+  const g=M.find(x=>x.id==="m22"); if(g) g.url="https://learn.microsoft.com/en-us/training/modules/fabric-govern-analytics-data/"; })();
 const KEY = "dp600.estudio.v1";
 const ST = ["Pendiente","Estudiando","Dominado"];
 
@@ -257,7 +270,15 @@ const FUENTES = [
     ["Exam Sandbox (demo de la interfaz del examen)", "https://go.microsoft.com/fwlink/?linkid=2226877"],
     ["Videos de preparación del examen", "https://aka.ms/DP600-ExamPrep"]
   ]],
-  ["Rutas de aprendizaje de Microsoft Learn usadas en la Teoría", [
+  ["Course Syllabus oficial · DP-600T00-A (base de la Teoría)", [
+    ["Curso: Implement analytics solutions using Microsoft Fabric (DP-600T00)", "https://learn.microsoft.com/en-us/training/courses/dp-600t00/"],
+    ["Ruta 1 · Explore analytics data stores in Microsoft Fabric", "https://learn.microsoft.com/en-us/training/paths/explore-analytics-data-stores/"],
+    ["Ruta 2 · Design and transform analytics data in Microsoft Fabric", "https://learn.microsoft.com/en-us/training/paths/design-transform-analytics-data/"],
+    ["Ruta 3 · Design and manage semantic models in Microsoft Fabric", "https://learn.microsoft.com/en-us/training/paths/design-manage-semantic-models-fabric/"],
+    ["Ruta 4 · Prepare AI-ready analytics data in Microsoft Fabric", "https://learn.microsoft.com/en-us/training/paths/prepare-ai-ready-analytics-data/"],
+    ["Ruta 5 · Secure and govern analytics data in Microsoft Fabric", "https://learn.microsoft.com/en-us/training/paths/secure-govern-analytics-data/"]
+  ]],
+  ["Rutas anteriores de Learn usadas como material de apoyo", [
     ["Get started with Microsoft Fabric (base recomendada)", "https://learn.microsoft.com/en-us/training/paths/get-started-fabric/"],
     ["Implement a Lakehouse with Microsoft Fabric", "https://learn.microsoft.com/en-us/training/paths/implement-lakehouse-microsoft-fabric/"],
     ["Implement a data warehouse with Microsoft Fabric", "https://learn.microsoft.com/en-us/training/paths/work-with-data-warehouses-using-microsoft-fabric/"],
@@ -298,8 +319,8 @@ function vTeoria(id){
   if (!m){
     const tot = M.reduce((a,x)=>a+modProg(x).t,0), rd = M.reduce((a,x)=>a+modProg(x).r,0);
     main.append(fuentesCard(true));
-    main.append(h("div",{class:"card"}, h("h2",null,"Teoría estructurada según la ruta oficial de Microsoft Learn"),
-      h("p",{class:"mut"},"Cada módulo replica la estructura del módulo original (objetivos y unidades) con un resumen propio en español. Los módulos «Complementos» cubren habilidades de la guía que Learn no desarrolla en un módulo concreto. Abre el módulo original para el texto completo, laboratorios y evaluación."),
+    main.append(h("div",{class:"card"}, h("h2",null,"Teoría según el Course Syllabus oficial (DP-600T00-A)"),
+      h("p",{class:"mut"},"Cada módulo replica la estructura del módulo original (objetivos y unidades) con un resumen propio en español. Las 5 rutas siguen el orden del curso DP-600T00-A, tal como aparece en «Prepare for the exam» de la página de certificación. Al final, el material de apoyo cubre habilidades de la guía de estudio que el syllabus no desarrolla. Abre el módulo original para el texto completo, laboratorios y evaluación."),
       h("div",{class:"row"}, h("div",{class:"bar sp"},h("i",{style:"width:"+pct(rd,tot)+"%"})), h("span",{class:"mut"},rd+"/"+tot+" lecciones leídas"))));
     let last = null, card = null;
     M.forEach(x=>{

@@ -39,3 +39,16 @@ Las lecciones son resúmenes propios (no copia del texto de Microsoft) basados e
 ## Aviso
 
 Las preguntas están redactadas para práctica y no son preguntas reales del examen. Contrasta siempre con la guía oficial vigente.
+
+
+## Estructura de la Teoría (Course Syllabus DP-600T00-A)
+
+La Teoría sigue el árbol de "Prepare for the exam" de la página de certificación, en este orden:
+
+1. Explore analytics data stores in Microsoft Fabric
+2. Design and transform analytics data in Microsoft Fabric
+3. Design and manage semantic models in Microsoft Fabric
+4. Prepare AI-ready analytics data in Microsoft Fabric
+5. Secure and govern analytics data in Microsoft Fabric
+
+Al final hay un grupo "Material de apoyo" con módulos de rutas anteriores que cubren habilidades de la guía de estudio no desarrolladas en el syllabus. Los textos son resúmenes propios en español; el contenido completo está en los enlaces de Microsoft Learn. Los módulos de IA (Fabric IQ) son recientes y no figuran en las habilidades de la guía.
