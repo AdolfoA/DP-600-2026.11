@@ -155,8 +155,8 @@ window.TEORIA.push(
 },
 
 {
-  id: "m23", ruta: "Manage a Microsoft Fabric environment", titulo: "Administer a Microsoft Fabric environment",
-  url: "https://learn.microsoft.com/en-us/training/modules/administer-fabric/",
+  id: "m23", ruta: "Manage a Microsoft Fabric environment", titulo: "Administración del entorno de Fabric (complemento)",
+  url: "https://learn.microsoft.com/en-us/search/?terms=Fabric%20admin%20portal%20tenant%20settings%20capacity",
   objetivos: ["Describir la jerarquía de administración de Fabric e identificar el rol de administrador adecuado para cada tarea.", "Configurar tenant settings, dominios y delegar derechos de administración.", "Gestionar licencias y controlar cómo los usuarios acceden y comparten contenido.", "Monitorizar el uso de la plataforma, gestionar la salud de la capacidad y aplicar controles de gobierno."],
   habilidades: ["s1.1", "s1.2", "s2.4", "s2.5"],
   unidades: [

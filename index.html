@@ -110,6 +110,7 @@ footer{max-width:980px;margin:0 auto;padding:0 20px 30px;color:var(--mut);font-s
 <script src="data/teoria_complementos.js"></script>
 <script src="data/teoria_syllabus.js"></script>
 <script src="data/traducciones.js"></script>
+<script src="data/unidades.js"></script>
 <script src="data/historial.js"></script>
 <script>
 (function(){
@@ -128,6 +129,18 @@ const T = window.TEMARIO, Q = window.PREGUNTAS;
 let M = window.TEORIA || [];
 (function(){ const ord=[]; SYLLABUS.forEach(([r,u,ids])=>ids.forEach(id=>{const m=M.find(x=>x.id===id); if(m){m.ruta=r; m.rutaUrl=u; ord.push(m);}}));
   const rest=M.filter(m=>!ord.includes(m)); rest.forEach(m=>{m.ruta=APOYO;}); M=ord.concat(rest);
+  { const g0=M.find(x=>x.id==="m22"); if(g0) g0.url="https://learn.microsoft.com/en-us/training/modules/fabric-govern-analytics-data/"; }
+  // Unidades oficiales de Learn: cada módulo muestra todas sus unidades (introducción, contenido, ejercicio, evaluación, resumen)
+  const TR=window.TRAD||(window.TRAD={}); Object.assign(TR,{"Introduction":"Introducción","Module assessment":"Evaluación del módulo","Knowledge check":"Comprobación de conocimientos","Summary":"Resumen"});
+  M.forEach(m=>{ const U=window.UNIDADES&&window.UNIDADES[m.id]; if(!U) return;
+    const base=m.url.replace(/\/(en-us|en-gb)\//,"/en-us/").replace(/\/?$/,"/"); const les=m.unidades;
+    m.unidades=U.map(u=>{ let t,c;
+      if(u.k==="c"){ t=les[u.c].t; c=les[u.c].c; }
+      else if(u.k==="i"){ t="Introduction"; c=["Presentación del módulo y de su escenario. Léela en Microsoft Learn; aquí tienes los objetivos que debes dominar al terminar:",{ul:m.objetivos}]; }
+      else if(u.k==="x"){ t="Exercise - "+u.t; TR[t]="Ejercicio: "+(window.EJERCICIOS_ES[u.t]||u.t); c=["Laboratorio guiado en Microsoft Learn. Se hace en un entorno real de Fabric (prueba gratuita o una capacidad disponible). No añade teoría nueva, pero sirve para afianzar lo anterior.",{ej:"Haz el laboratorio en Learn y vuelve a revisar las lecciones de este módulo en las que dudes."}]; }
+      else if(u.k==="q"){ t=/check$/.test(u.h)?"Knowledge check":"Module assessment"; c=["Preguntas de comprobación de Microsoft Learn al final del módulo. Puedes complementarlas con la pestaña Práctica de esta app."]; }
+      else { t="Summary"; c=["Recapitulación oficial del módulo. Si has leído las lecciones anteriores, solo necesitas repasar los objetivos:",{ul:m.objetivos}]; }
+      return {t,c,url:base+u.h}; }); });
   const g=M.find(x=>x.id==="m22"); if(g) g.url="https://learn.microsoft.com/en-us/training/modules/fabric-govern-analytics-data/"; })();
 const KEY = "dp600.estudio.v1";
 const ST = ["Pendiente","Estudiando","Dominado"];
@@ -350,7 +363,7 @@ function vTeoria(id){
     const d = h("details",{class:"lec"+(S.teoria[k]?" read":"")});
     const chk = h("span",{class:"chk"+(S.teoria[k]?" on":"")}, S.teoria[k]?"✔ Leída":"Marcar leída");
     chk.onclick = ev => { ev.preventDefault(); ev.stopPropagation(); S.teoria[k] = !S.teoria[k]; save(); chk.classList.toggle("on",!!S.teoria[k]); chk.textContent = S.teoria[k]?"✔ Leída":"Marcar leída"; d.classList.toggle("read",!!S.teoria[k]); };
-    d.append(h("summary",null,(i+1)+". "+tr(u.t), chk), h("div",{class:"body"}, tr(u.t)!==u.t ? h("div",{class:"mut"},"Unidad original: "+u.t) : null, u.c.map(block), m.url ? h("div",{class:"mut",style:"margin-top:8px"},"Texto completo de esta unidad: ", h("a",{href:esUrl(m.url),target:"_blank",rel:"noopener",style:"color:var(--acc)"},"módulo en Microsoft Learn ↗")) : null));
+    d.append(h("summary",null,(i+1)+". "+tr(u.t), chk), h("div",{class:"body"}, tr(u.t)!==u.t ? h("div",{class:"mut"},"Unidad original: "+u.t) : null, u.c.map(block), (u.url||m.url) ? h("div",{class:"mut",style:"margin-top:8px"},"Texto completo de esta unidad: ", h("a",{href:esUrl(u.url||m.url),target:"_blank",rel:"noopener",style:"color:var(--acc)"},u.url?"unidad en Microsoft Learn (ES) ↗":"módulo en Microsoft Learn (ES) ↗"), u.url ? h("span",null," · ",h("a",{href:u.url,target:"_blank",rel:"noopener",style:"color:var(--acc)"},"original (EN) ↗")) : null) : null));
     main.append(d);
   });
   main.append(h("div",{class:"row",style:"margin-top:14px"},

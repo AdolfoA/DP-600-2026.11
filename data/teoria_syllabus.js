@@ -429,9 +429,11 @@ window.TEORIA.push(
     { t: "Connect an ontology to data", c: [
       "La ontología se enlaza a datos de OneLake, como tablas de un lakehouse o flujos de un eventhouse, de modo que cada tipo de entidad se alimenta de datos reales."
     ] },
-    { t: "Configure ontology relationships and preview", c: [
-      "Se configuran las relaciones entre tipos de entidad usando las claves y se previsualiza la ontología para validar que las instancias y sus vínculos se ven como se espera antes de usarla.",
-      { ej: "Haz los dos ejercicios del módulo: construir una ontología manualmente y generarla desde un semantic model." }
+    { t: "Configure ontology relationships", c: [
+      "Las relaciones se configuran entre tipos de entidad usando sus claves, de modo que cada vínculo (por ejemplo, un Cliente realiza Pedidos) se resuelva con datos reales."
+    ] },
+    { t: "Preview the ontology", c: [
+      "Se previsualiza la ontología para validar que las instancias y sus vínculos se ven como se espera antes de usarla."
     ] }
   ]
 }

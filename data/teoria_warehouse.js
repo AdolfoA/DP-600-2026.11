@@ -147,15 +147,20 @@ window.TEORIA.push(
   objetivos: ["Usar el chat de IA, las sugerencias en línea y las acciones rápidas para generar, refinar, explicar y corregir T-SQL.", "Aplicar buenas prácticas al escribir prompts."],
   habilidades: ["s11.2"],
   unidades: [
-    { t: "Copilot en el warehouse (resumen del módulo)", c: [
-      "Copilot es un asistente de IA integrado en el editor SQL del warehouse. Ayuda a escribir y entender T-SQL más rápido.",
-      { ul: [
-        "Chat: se describe en lenguaje natural lo que se quiere y Copilot propone la consulta.",
-        "Sugerencias en línea: autocompleta código mientras se escribe.",
-        "Acciones rápidas: explicar una consulta o corregir errores de una ya escrita.",
-        "Buenas prácticas de prompt: ser específico con tablas y columnas, indicar el resultado esperado y refinar iterando."
-      ] },
-      "Siempre hay que revisar el código generado antes de ejecutarlo. Este módulo tiene un peso menor en el examen que los de carga, consulta y seguridad."
+    { t: "Use Copilot code completion in Microsoft Fabric's Data Warehouse", c: [
+      "Copilot es un asistente de IA integrado en el editor SQL del warehouse. La finalización de código ofrece sugerencias en línea mientras escribes T-SQL: completa sentencias a partir del contexto (nombres de tablas y columnas, comentarios) y se acepta o se descarta con el teclado.",
+      "Siempre hay que revisar el código sugerido antes de ejecutarlo. Este módulo pesa menos en el examen que los de carga, consulta y seguridad."
+    ] },
+    { t: "Use Copilot chat in Microsoft Fabric's Data Warehouse", c: [
+      "El chat de Copilot permite describir en lenguaje natural lo que se quiere y recibir una consulta T-SQL propuesta, además de hacer preguntas sobre el warehouse y sus datos.",
+      { ul: ["Se puede pedir generar, explicar o refinar una consulta.", "El resultado se inserta en el editor y se ejecuta bajo tu responsabilidad."] }
+    ] },
+    { t: "Use Copilot quick actions in Microsoft Fabric's Data Warehouse", c: [
+      "Las acciones rápidas son atajos sobre el código ya escrito.",
+      { ul: ["Explicar: describe en lenguaje natural qué hace una consulta.", "Corregir: detecta y propone arreglos para errores de sintaxis o lógica."] }
+    ] },
+    { t: "Review best practices using Copilot in Microsoft Fabric's Data Warehouse", c: [
+      { ul: ["Ser específico: citar tablas y columnas y el resultado esperado.", "Dividir las peticiones complejas en pasos y refinar iterando.", "Validar siempre el código generado y los resultados antes de usarlos."] }
     ] }
   ]
 },
