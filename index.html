@@ -109,9 +109,12 @@ footer{max-width:980px;margin:0 auto;padding:0 20px 30px;color:var(--mut);font-s
 <script src="data/teoria_gestion.js"></script>
 <script src="data/teoria_complementos.js"></script>
 <script src="data/teoria_syllabus.js"></script>
+<script src="data/traducciones.js"></script>
 <script>
 (function(){
 "use strict";
+const tr = t => (window.TRAD && window.TRAD[t]) || t;
+const esUrl = u => u ? u.replace(/\/(en-us|en-gb)\//,"/es-es/") : u;
 const SYLLABUS = [
   ["Ruta 1 · Explora los almacenes de datos analíticos en Microsoft Fabric","https://learn.microsoft.com/en-us/training/paths/explore-analytics-data-stores/",["m01","m24","m02","m08","m25"]],
   ["Ruta 2 · Diseña y transforma datos analíticos en Microsoft Fabric","https://learn.microsoft.com/en-us/training/paths/design-transform-analytics-data/",["m26","m27","m28","m29","m30"]],
@@ -326,15 +329,17 @@ function vTeoria(id){
     M.forEach(x=>{
       if (x.ruta !== last){ last = x.ruta; card = h("div",{class:"card"}, h("div",{class:"ruta"},x.ruta)); main.append(card); }
       const p = modProg(x);
-      card.append(h("div",{class:"mod"}, h("div",{class:"n"}, h("b",null,x.id.toUpperCase()+" · "+x.titulo), h("span",{class:"mut"},x.unidades.length+" lecciones")),
+      card.append(h("div",{class:"mod"}, h("div",{class:"n"}, h("b",null,x.id.toUpperCase()+" · "+tr(x.titulo)), h("span",{class:"mut"},(tr(x.titulo)!==x.titulo?x.titulo+" · ":"")+x.unidades.length+" lecciones")),
         h("div",{class:"bar"},h("i",{style:"width:"+pct(p.r,p.t)+"%"})), h("button",{class:"g",onclick:()=>go("teoria",x.id)}, p.r?"Continuar":"Abrir")));
     });
     return;
   }
   const idx = M.indexOf(m);
   main.append(h("div",{class:"row",style:"margin-bottom:10px"}, h("button",{class:"g",onclick:()=>go("teoria")},"← Todos los módulos"), h("span",{class:"sp"}),
-    m.url ? h("a",{class:"g",href:m.url,target:"_blank",rel:"noopener"},"Abrir en Microsoft Learn ↗") : null));
-  const head = h("div",{class:"card"}, h("div",{class:"mut"},m.ruta), h("h2",null,m.id.toUpperCase()+" · "+m.titulo),
+    m.rutaUrl ? h("a",{class:"g",href:esUrl(m.rutaUrl),target:"_blank",rel:"noopener"},"Ruta en Learn ↗") : null,
+    m.url ? h("a",{class:"g",href:esUrl(m.url),target:"_blank",rel:"noopener"},(/\/search\//.test(m.url)?"Buscar en Microsoft Learn (ES) ↗":"Módulo en Learn (ES) ↗")) : null,
+    m.url && !/\/search\//.test(m.url) ? h("a",{class:"g",href:m.url.replace(/\/(en-gb)\//,"/en-us/"),target:"_blank",rel:"noopener"},"Original (EN) ↗") : null));
+  const head = h("div",{class:"card"}, h("div",{class:"mut"},m.ruta), h("h2",null,m.id.toUpperCase()+" · "+tr(m.titulo)), tr(m.titulo)!==m.titulo ? h("div",{class:"mut"},"Título original: "+m.titulo) : null,
     h("b",null,"Objetivos"), h("ul",null,m.objetivos.map(o=>h("li",null,o))));
   const sk = m.habilidades.map(sid => { const [sec,n] = sid.split("."); const S0 = secs.find(z=>z.id===sec); return S0 && S0.habilidades[n-1] ? h("a",{class:"chip",title:S0.habilidades[n-1],onclick:()=>go("temario")}, S0.habilidades[n-1].slice(0,60)+(S0.habilidades[n-1].length>60?"…":"")) : null; });
   head.append(h("div",{style:"margin-top:8px"},h("span",{class:"mut"},"Habilidades del examen relacionadas: "),sk));
@@ -344,7 +349,7 @@ function vTeoria(id){
     const d = h("details",{class:"lec"+(S.teoria[k]?" read":"")});
     const chk = h("span",{class:"chk"+(S.teoria[k]?" on":"")}, S.teoria[k]?"✔ Leída":"Marcar leída");
     chk.onclick = ev => { ev.preventDefault(); ev.stopPropagation(); S.teoria[k] = !S.teoria[k]; save(); chk.classList.toggle("on",!!S.teoria[k]); chk.textContent = S.teoria[k]?"✔ Leída":"Marcar leída"; d.classList.toggle("read",!!S.teoria[k]); };
-    d.append(h("summary",null,(i+1)+". "+u.t, chk), h("div",{class:"body"}, u.c.map(block)));
+    d.append(h("summary",null,(i+1)+". "+tr(u.t), chk), h("div",{class:"body"}, tr(u.t)!==u.t ? h("div",{class:"mut"},"Unidad original: "+u.t) : null, u.c.map(block), m.url ? h("div",{class:"mut",style:"margin-top:8px"},"Texto completo de esta unidad: ", h("a",{href:esUrl(m.url),target:"_blank",rel:"noopener",style:"color:var(--acc)"},"módulo en Microsoft Learn ↗")) : null));
     main.append(d);
   });
   main.append(h("div",{class:"row",style:"margin-top:14px"},
