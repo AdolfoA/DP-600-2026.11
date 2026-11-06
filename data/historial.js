@@ -1,6 +1,20 @@
 // Generado por tools/gen_historial.sh
 window.HISTORIAL = [
  {
+  "sha": "d8cc16fbdfdacc55e609edd8d60b74fba7a0d513",
+  "autor": "Claude",
+  "fecha": "2026-11-06T17:05:01-04:00",
+  "msg": "Buscador global sobre lecciones, módulos, habilidades y preguntas",
+  "cuerpo": ""
+ },
+ {
+  "sha": "24a1addd0e6bb372d21c59a4aaca118bb90a5932",
+  "autor": "Claude",
+  "fecha": "2026-11-06T17:01:52-04:00",
+  "msg": "Actualiza instantánea del historial",
+  "cuerpo": ""
+ },
+ {
   "sha": "76463e1b34530b41ded801957910f937de69c432",
   "autor": "Claude",
   "fecha": "2026-11-06T17:01:52-04:00",
