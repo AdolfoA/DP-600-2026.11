@@ -15,7 +15,17 @@ h1 small{color:var(--mut);font-weight:400;font-size:13px;margin-left:8px}
 .top{display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:space-between}
 .pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:13px;color:var(--mut)}
 .pill b{color:var(--acc)}
-nav{display:flex;gap:4px;margin-top:14px;border-bottom:1px solid var(--line);overflow-x:auto}
+.navrow{display:flex;gap:12px;align-items:flex-end;margin-top:14px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+nav{display:flex;gap:4px;overflow-x:auto;flex:1 1 auto}
+.srch{position:relative;flex:0 1 280px;min-width:200px;margin-bottom:6px}
+.srch input{width:100%;background:var(--panel);border:1px solid var(--line);border-radius:999px;color:var(--txt);padding:7px 14px;font:inherit;font-size:14px}
+.srch input:focus{outline:none;border-color:var(--acc)}
+#sres{position:absolute;right:0;top:100%;margin-top:6px;width:min(560px,92vw);max-height:70vh;overflow:auto;background:var(--panel2);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px #000a;z-index:50;display:none}
+#sres .it{padding:9px 14px;border-bottom:1px solid var(--line);cursor:pointer}
+#sres .it:hover,#sres .it.sel{background:var(--panel)}
+#sres .it small{display:block;color:var(--mut)}
+#sres mark{background:#4ade8033;color:var(--acc);border-radius:3px}
+#sres .gr{padding:6px 14px;font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.05em}
 nav button{background:none;border:0;color:var(--mut);padding:10px 14px;font:inherit;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
 nav button.on{color:var(--acc);border-color:var(--acc)}
 main{max-width:980px;margin:0 auto;padding:18px 20px 60px}
@@ -96,7 +106,7 @@ footer{max-width:980px;margin:0 auto;padding:0 20px 30px;color:var(--mut);font-s
     <h1>DP-600 · Estudio <small>Fabric Analytics Engineer Associate</small></h1>
     <div class="row"><span class="pill" id="topUpd" title="Fecha del último cambio del repo">Actualizado: <b>–</b></span><span class="pill">Habilidades dominadas: <b id="topSk">0%</b></span><span class="pill">Precisión: <b id="topAcc">–</b></span></div>
   </div>
-  <nav id="nav"></nav>
+  <div class="navrow"><nav id="nav"></nav><div class="srch"><input id="sq" type="search" placeholder="Buscar en el contenido…  ( / )" autocomplete="off"><div id="sres"></div></div></div>
 </header>
 <main id="main"></main>
 <footer>Banco de preguntas redactado para práctica (no son preguntas reales del examen). El temario y la teoría siguen la estructura oficial de Microsoft Learn (resúmenes propios). Tu progreso se guarda solo en este navegador.</footer>
@@ -365,7 +375,9 @@ function vTeoria(id){
     chk.onclick = ev => { ev.preventDefault(); ev.stopPropagation(); S.teoria[k] = !S.teoria[k]; save(); chk.classList.toggle("on",!!S.teoria[k]); chk.textContent = S.teoria[k]?"✔ Leída":"Marcar leída"; d.classList.toggle("read",!!S.teoria[k]); };
     d.append(h("summary",null,(i+1)+". "+tr(u.t), chk), h("div",{class:"body"}, tr(u.t)!==u.t ? h("div",{class:"mut"},"Unidad original: "+u.t) : null, u.c.map(block), (u.url||m.url) ? h("div",{class:"mut",style:"margin-top:8px"},"Texto completo de esta unidad: ", h("a",{href:esUrl(u.url||m.url),target:"_blank",rel:"noopener",style:"color:var(--acc)"},u.url?"unidad en Microsoft Learn (ES) ↗":"módulo en Microsoft Learn (ES) ↗"), u.url ? h("span",null," · ",h("a",{href:u.url,target:"_blank",rel:"noopener",style:"color:var(--acc)"},"original (EN) ↗")) : null) : null));
     main.append(d);
+    if (window.__openUnit===i){ d.open = true; setTimeout(()=>d.scrollIntoView({block:"start"}),0); }
   });
+  window.__openUnit = null;
   main.append(h("div",{class:"row",style:"margin-top:14px"},
     idx>0 ? h("button",{class:"g",onclick:()=>go("teoria",M[idx-1].id)},"← "+M[idx-1].id.toUpperCase()) : null, h("span",{class:"sp"}),
     idx<M.length-1 ? h("button",{class:"b",onclick:()=>go("teoria",M[idx+1].id)},M[idx+1].id.toUpperCase()+" →") : null,
@@ -490,6 +502,56 @@ function vProgreso(){
 }
 
 // ---------- Recursos ----------
+// ---------- Buscador ----------
+const norm = t => String(t||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+const flat = b => typeof b==="string"?b : b.ul?b.ul.join(" ") : b.code||b.tip||b.ej||(b.tabla?b.tabla.map(r=>r.join(" ")).join(" "):"");
+let IDX = null;
+function buildIdx(){
+  IDX = [];
+  M.forEach(m=>m.unidades.forEach((u,i)=>{ const body=u.c.map(flat).join(" "); IDX.push({g:"Teoría",t:tr(u.t),sub:m.id.toUpperCase()+" · "+tr(m.titulo),txt:body,key:norm(tr(u.t)+" "+u.t+" "+body+" "+tr(m.titulo)),go:()=>{ window.__openUnit=i; go("teoria",m.id); }}); }));
+  M.forEach(m=>IDX.push({g:"Módulos",t:m.id.toUpperCase()+" · "+tr(m.titulo),sub:m.ruta,txt:m.objetivos.join(" "),key:norm(m.titulo+" "+tr(m.titulo)+" "+m.objetivos.join(" ")),go:()=>go("teoria",m.id)}));
+  skillList.forEach(k=>IDX.push({g:"Habilidades del examen",t:k.texto,sub:"Temario · sección "+k.sec,txt:"",key:norm(k.texto),go:()=>go("temario")}));
+  Q.forEach(q=>IDX.push({g:"Preguntas",t:q.pregunta,sub:"Práctica",txt:q.explicacion||"",key:norm(q.pregunta+" "+q.opciones.join(" ")+" "+(q.explicacion||"")),go:()=>{ pFilter={dom:q.dominio,sec:q.seccion,modo:"todas"}; go("practica"); }}));
+}
+function snip(txt, words){
+  const n = norm(txt); let pos = -1; for (const w of words){ pos = n.indexOf(w); if (pos>=0) break; }
+  if (pos<0) return txt.slice(0,110);
+  const a = Math.max(0,pos-40); return (a?"…":"")+txt.slice(a,a+120)+(a+120<txt.length?"…":"");
+}
+function hl(t, words){
+  const n = norm(t); let out="", last=0; const spans=[];
+  words.forEach(w=>{ let i=n.indexOf(w); while(i>=0){ spans.push([i,i+w.length]); i=n.indexOf(w,i+w.length); } });
+  spans.sort((a,b)=>a[0]-b[0]); const nodes=[]; spans.forEach(([a,b])=>{ if(a<last) return; nodes.push(t.slice(last,a), h("mark",null,t.slice(a,b))); last=b; }); nodes.push(t.slice(last)); return nodes;
+}
+function initSearch(){
+  const inp = document.getElementById("sq"), box = document.getElementById("sres"); let sel = -1, items = [];
+  const close = () => { box.style.display="none"; sel=-1; };
+  const pick = i => { const it = items[i]; if(!it) return; close(); inp.value=""; inp.blur(); it.go(); };
+  function run(){
+    const q = inp.value.trim(); if (q.length<2){ close(); return; }
+    if(!IDX) buildIdx();
+    const words = norm(q).split(/\s+/).filter(Boolean);
+    const hit = IDX.filter(x=>words.every(w=>x.key.includes(w)));
+    const score = x => { const nt = norm(x.t); return words.reduce((a,w)=>a+(nt.includes(w)?2:0),0); };
+    const order = ["Teoría","Módulos","Habilidades del examen","Preguntas"];
+    items = []; box.innerHTML = "";
+    order.forEach(g=>{ const arr = hit.filter(x=>x.g===g).sort((a,b)=>score(b)-score(a)).slice(0, g==="Teoría"?12:6); if(!arr.length) return;
+      box.append(h("div",{class:"gr"},g+" ("+hit.filter(x=>x.g===g).length+")"));
+      arr.forEach(x=>{ const i = items.length; items.push(x);
+        box.append(h("div",{class:"it",onmousedown:ev=>{ev.preventDefault(); pick(i);}}, h("div",null,hl(x.t.length>140?x.t.slice(0,140)+"…":x.t,words)), h("small",null,x.sub), x.txt ? h("small",null,hl(snip(x.txt,words),words)) : null)); }); });
+    if(!items.length) box.append(h("div",{class:"it",style:"cursor:default"},"Sin resultados para «"+q+"»"));
+    box.style.display="block"; sel=-1;
+  }
+  inp.addEventListener("input",run); inp.addEventListener("focus",run);
+  inp.addEventListener("blur",()=>setTimeout(close,120));
+  inp.addEventListener("keydown",ev=>{ const els=[...box.querySelectorAll(".it")].filter(e=>e.onmousedown);
+    if(ev.key==="Escape"){ close(); inp.blur(); }
+    else if(ev.key==="ArrowDown"||ev.key==="ArrowUp"){ ev.preventDefault(); if(!els.length) return; sel=(sel+(ev.key==="ArrowDown"?1:-1)+els.length)%els.length; els.forEach((e,i)=>e.classList.toggle("sel",i===sel)); els[sel].scrollIntoView({block:"nearest"}); }
+    else if(ev.key==="Enter"){ pick(sel>=0?sel:0); } });
+  document.addEventListener("keydown",ev=>{ if(ev.key==="/" && !/INPUT|TEXTAREA|SELECT/.test((document.activeElement||{}).tagName)){ ev.preventDefault(); inp.focus(); } });
+}
+initSearch();
+
 // ---------- Site: historial de commits ----------
 const REPO = "AdolfoA/DP-600-2026.11";
 const fmtF = iso => { const d=new Date(iso); return isNaN(d)?"–":d.toLocaleDateString("es",{day:"2-digit",month:"long",year:"numeric"})+" · "+d.toLocaleTimeString("es",{hour:"2-digit",minute:"2-digit"}); };
