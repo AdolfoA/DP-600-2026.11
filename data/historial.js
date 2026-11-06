@@ -1,6 +1,13 @@
 // Generado por tools/gen_historial.sh
 window.HISTORIAL = [
  {
+  "sha": "08c5875306d41769f17e56a4dbe09e5dd2caded7",
+  "autor": "Claude",
+  "fecha": "2026-11-06T16:51:52-04:00",
+  "msg": "Pestaña Site con historial de commits y fecha de actualización en la cabecera",
+  "cuerpo": ""
+ },
+ {
   "sha": "799078fe81181e80d0383c0078f6e3d7e840f49b",
   "autor": "Claude",
   "fecha": "2026-11-06T16:46:58-04:00",
