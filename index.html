@@ -67,6 +67,26 @@ details[open].sec>summary::before{content:"▾"}
 .pass{color:var(--ok)}.fail{color:var(--bad)}
 table{width:100%;border-collapse:collapse}
 td,th{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;font-size:14px}
+.mod{display:flex;gap:12px;align-items:center;padding:10px 0;border-top:1px dashed var(--line)}
+.mod .n{flex:1}.mod .n b{display:block}
+.mod .bar{width:110px;flex:none}
+.ruta{margin:18px 0 6px;color:var(--acc);font-weight:700}
+.lec{border:1px solid var(--line);border-radius:10px;margin:10px 0;background:var(--panel)}
+.lec>summary{cursor:pointer;padding:12px 14px;font-weight:600;list-style:none;display:flex;gap:10px;align-items:center}
+.lec>summary::before{content:"▸";color:var(--acc)}
+.lec[open]>summary::before{content:"▾"}
+.lec .body{padding:0 16px 14px}
+.lec .body p{margin:10px 0}
+.lec .body ul{margin:8px 0;padding-left:22px}.lec .body li{margin:5px 0}
+.lec.read>summary{color:var(--mut)}
+.chk{margin-left:auto;font-size:12px;border:1px solid var(--line);border-radius:6px;padding:2px 8px;color:var(--mut);font-weight:400}
+.chk.on{background:var(--acc2);color:#04130a;border-color:var(--acc2);font-weight:700}
+pre{background:#0b100e;border:1px solid var(--line);border-radius:8px;padding:10px 12px;overflow:auto;font:13px/1.5 ui-monospace,Menlo,Consolas,monospace;color:#d7e8dd}
+.tipbox{background:#2b2410;border-left:3px solid var(--warn);border-radius:6px;padding:8px 12px;margin:10px 0}
+.ejbox{background:#10252b;border-left:3px solid #38bdf8;border-radius:6px;padding:8px 12px;margin:10px 0}
+.chip{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:1px 10px;margin:2px 4px 2px 0;font-size:12px;color:var(--mut);cursor:pointer;text-decoration:none}
+.chip:hover{border-color:var(--acc);color:var(--acc)}
+.lec table td,.lec table th{border:1px solid var(--line)}
 footer{max-width:980px;margin:0 auto;padding:0 20px 30px;color:var(--mut);font-size:12px}
 </style>
 </head>
@@ -79,21 +99,26 @@ footer{max-width:980px;margin:0 auto;padding:0 20px 30px;color:var(--mut);font-s
   <nav id="nav"></nav>
 </header>
 <main id="main"></main>
-<footer>Banco de preguntas redactado para práctica (no son preguntas reales del examen). El temario sigue la guía oficial de Microsoft Learn. Tu progreso se guarda solo en este navegador.</footer>
+<footer>Banco de preguntas redactado para práctica (no son preguntas reales del examen). El temario y la teoría siguen la estructura oficial de Microsoft Learn (resúmenes propios). Tu progreso se guarda solo en este navegador.</footer>
 
 <script src="data/temario.js"></script>
 <script src="data/preguntas.js"></script>
+<script src="data/teoria_lakehouse.js"></script>
+<script src="data/teoria_warehouse.js"></script>
+<script src="data/teoria_semantico.js"></script>
+<script src="data/teoria_gestion.js"></script>
+<script src="data/teoria_complementos.js"></script>
 <script>
 (function(){
 "use strict";
-const T = window.TEMARIO, Q = window.PREGUNTAS;
+const T = window.TEMARIO, Q = window.PREGUNTAS, M = window.TEORIA || [];
 const KEY = "dp600.estudio.v1";
 const ST = ["Pendiente","Estudiando","Dominado"];
 
 // ---------- estado ----------
 let S;
 try { S = JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e){ S = {}; }
-S.skills = S.skills || {}; S.answers = S.answers || {}; S.exams = S.exams || [];
+S.skills = S.skills || {}; S.answers = S.answers || {}; S.exams = S.exams || []; S.teoria = S.teoria || {};
 function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} topbar(); }
 
 // ---------- utilidades ----------
@@ -128,14 +153,14 @@ function topbar(){
 }
 
 // ---------- navegación ----------
-const tabs = [["temario","Temario"],["practica","Práctica"],["simulacro","Simulacro"],["progreso","Progreso"],["recursos","Recursos"]];
+const tabs = [["temario","Temario"],["teoria","Teoría"],["practica","Práctica"],["simulacro","Simulacro"],["progreso","Progreso"],["recursos","Recursos"]];
 const main = document.getElementById("main"), nav = document.getElementById("nav");
 let current = "temario";
-function go(t){
-  current = t; location.hash = t;
+function go(t, arg){
+  current = t; location.hash = t + (arg ? "/" + arg : "");
   nav.innerHTML = ""; tabs.forEach(([k,l]) => nav.append(h("button",{class:k===t?"on":"",onclick:()=>go(k)},l)));
   main.innerHTML = "";
-  ({temario:vTemario,practica:vPractica,simulacro:vSimulacro,progreso:vProgreso,recursos:vRecursos}[t])();
+  ({temario:vTemario,teoria:()=>vTeoria(arg),practica:vPractica,simulacro:vSimulacro,progreso:vProgreso,recursos:vRecursos}[t])();
   window.scrollTo(0,0);
 }
 
@@ -163,12 +188,16 @@ function vTemario(){
         note.oninput = () => { S.skills[id] = S.skills[id]||{}; S.skills[id].n = note.value; save(); };
         const noteBtn = h("span",null, (S.skills[id] && S.skills[id].n) ? "📝 Mis notas ●" : "📝 Mis notas");
         noteBtn.onclick = () => { note.style.display = note.style.display==="none" ? "block":"none"; };
+        const mods = M.filter(m => m.habilidades.includes(id));
         det.append(h("div",{class:"skill"}, btn,
           h("div",{class:"t"}, t,
             h("div",{class:"acts"},
-              h("a",{href:"https://learn.microsoft.com/en-us/search/?terms="+encodeURIComponent(t),target:"_blank",rel:"noopener"},"📖 Buscar en Learn"), noteBtn),
+              h("a",{href:"https://learn.microsoft.com/en-us/search/?terms="+encodeURIComponent(t),target:"_blank",rel:"noopener"},"📖 Buscar en Learn"), noteBtn,
+              mods.map(m => h("span",{onclick:()=>go("teoria",m.id),title:m.titulo},"📚 "+m.id.toUpperCase()))),
             note)));
       });
+      const secMods = M.filter(m => s.habilidades.some((_,i)=>m.habilidades.includes(s.id+"."+(i+1))));
+      if (secMods.length) det.append(h("div",{style:"margin-top:8px"}, h("span",{class:"mut"},"Teoría: "), secMods.map(m=>h("a",{class:"chip",onclick:()=>go("teoria",m.id)},m.id.toUpperCase()+" · "+m.titulo))));
       if (nq) det.append(h("div",{style:"margin-top:10px"}, h("button",{class:"g",onclick:()=>{ pFilter={dom:d.id,sec:s.id,modo:"todas"}; go("practica"); }},"Practicar esta sección")));
       card.append(det);
     });
@@ -213,6 +242,57 @@ function isOk(q, sel){ return sel.length===q.correctas.length && q.correctas.eve
 function record(q, ok){
   const a = S.answers[q.id] || {ok:0,total:0,last:null};
   a.total++; if (ok) a.ok++; a.last = ok; S.answers[q.id] = a; save();
+}
+
+
+// ---------- Teoría ----------
+const uKey = (m,i) => m.id + ":" + i;
+const modProg = m => { const r = m.unidades.filter((_,i)=>S.teoria[uKey(m,i)]).length; return {r, t:m.unidades.length}; };
+function block(b){
+  if (typeof b === "string") return h("p",null,b);
+  if (b.ul) return h("ul",null,b.ul.map(x=>h("li",null,x)));
+  if (b.code) return h("pre",null,b.code);
+  if (b.tip) return h("div",{class:"tipbox"},h("b",null,"Clave de examen: "),b.tip);
+  if (b.ej) return h("div",{class:"ejbox"},h("b",null,"Practica: "),b.ej);
+  if (b.tabla) return h("table",null,b.tabla.map((row,ri)=>h("tr",null,row.map(c=>h(ri===0?"th":"td",null,c)))));
+  return null;
+}
+function vTeoria(id){
+  const m = id && M.find(x=>x.id===id);
+  if (!m){
+    const tot = M.reduce((a,x)=>a+modProg(x).t,0), rd = M.reduce((a,x)=>a+modProg(x).r,0);
+    main.append(h("div",{class:"card"}, h("h2",null,"Teoría estructurada según la ruta oficial de Microsoft Learn"),
+      h("p",{class:"mut"},"Cada módulo replica la estructura del módulo original (objetivos y unidades) con un resumen propio en español. Los módulos «Complementos» cubren habilidades de la guía que Learn no desarrolla en un módulo concreto. Abre el módulo original para el texto completo, laboratorios y evaluación."),
+      h("div",{class:"row"}, h("div",{class:"bar sp"},h("i",{style:"width:"+pct(rd,tot)+"%"})), h("span",{class:"mut"},rd+"/"+tot+" lecciones leídas"))));
+    let last = null, card = null;
+    M.forEach(x=>{
+      if (x.ruta !== last){ last = x.ruta; card = h("div",{class:"card"}, h("div",{class:"ruta"},x.ruta)); main.append(card); }
+      const p = modProg(x);
+      card.append(h("div",{class:"mod"}, h("div",{class:"n"}, h("b",null,x.id.toUpperCase()+" · "+x.titulo), h("span",{class:"mut"},x.unidades.length+" lecciones")),
+        h("div",{class:"bar"},h("i",{style:"width:"+pct(p.r,p.t)+"%"})), h("button",{class:"g",onclick:()=>go("teoria",x.id)}, p.r?"Continuar":"Abrir")));
+    });
+    return;
+  }
+  const idx = M.indexOf(m);
+  main.append(h("div",{class:"row",style:"margin-bottom:10px"}, h("button",{class:"g",onclick:()=>go("teoria")},"← Todos los módulos"), h("span",{class:"sp"}),
+    m.url ? h("a",{class:"g",href:m.url,target:"_blank",rel:"noopener"},"Abrir en Microsoft Learn ↗") : null));
+  const head = h("div",{class:"card"}, h("div",{class:"mut"},m.ruta), h("h2",null,m.id.toUpperCase()+" · "+m.titulo),
+    h("b",null,"Objetivos"), h("ul",null,m.objetivos.map(o=>h("li",null,o))));
+  const sk = m.habilidades.map(sid => { const [sec,n] = sid.split("."); const S0 = secs.find(z=>z.id===sec); return S0 && S0.habilidades[n-1] ? h("a",{class:"chip",title:S0.habilidades[n-1],onclick:()=>go("temario")}, S0.habilidades[n-1].slice(0,60)+(S0.habilidades[n-1].length>60?"…":"")) : null; });
+  head.append(h("div",{style:"margin-top:8px"},h("span",{class:"mut"},"Habilidades del examen relacionadas: "),sk));
+  main.append(head);
+  m.unidades.forEach((u,i)=>{
+    const k = uKey(m,i);
+    const d = h("details",{class:"lec"+(S.teoria[k]?" read":"")});
+    const chk = h("span",{class:"chk"+(S.teoria[k]?" on":"")}, S.teoria[k]?"✔ Leída":"Marcar leída");
+    chk.onclick = ev => { ev.preventDefault(); ev.stopPropagation(); S.teoria[k] = !S.teoria[k]; save(); chk.classList.toggle("on",!!S.teoria[k]); chk.textContent = S.teoria[k]?"✔ Leída":"Marcar leída"; d.classList.toggle("read",!!S.teoria[k]); };
+    d.append(h("summary",null,(i+1)+". "+u.t, chk), h("div",{class:"body"}, u.c.map(block)));
+    main.append(d);
+  });
+  main.append(h("div",{class:"row",style:"margin-top:14px"},
+    idx>0 ? h("button",{class:"g",onclick:()=>go("teoria",M[idx-1].id)},"← "+M[idx-1].id.toUpperCase()) : null, h("span",{class:"sp"}),
+    idx<M.length-1 ? h("button",{class:"b",onclick:()=>go("teoria",M[idx+1].id)},M[idx+1].id.toUpperCase()+" →") : null,
+    h("button",{class:"g",onclick:()=>{ pFilter={dom:"todos",sec:"todas",modo:"todas"}; go("practica"); }},"Ir a práctica")));
 }
 
 // ---------- Práctica ----------
@@ -315,6 +395,8 @@ function vProgreso(){
       h("div",{class:"row"}, h("span",{class:"mut",style:"width:150px"},"Precisión: "+(a.tot?pct(a.ok,a.tot)+"%":"–")), h("div",{class:"bar sp"},h("i",{style:"width:"+pct(a.ok,a.tot)+"%"}))),
       h("div",{class:"mut"},"Preguntas respondidas: "+nq.filter(q=>S.answers[q.id]).length+"/"+nq.length)));
   });
+  const tt = M.reduce((a,x)=>a+modProg(x).t,0), tr = M.reduce((a,x)=>a+modProg(x).r,0);
+  c.append(h("div",{style:"margin:14px 0"}, h("b",null,"Teoría leída"), h("div",{class:"row"}, h("span",{class:"mut",style:"width:150px"},tr+"/"+tt+" lecciones"), h("div",{class:"bar sp"},h("i",{style:"width:"+pct(tr,tt)+"%"})))));
   main.append(c);
   const weak = secs.map(s=>({s,a:accuracy(q=>q.seccion===s.id)})).filter(x=>x.a.tot).sort((x,y)=>pct(x.a.ok,x.a.tot)-pct(y.a.ok,y.a.tot)).slice(0,3);
   main.append(h("div",{class:"card"}, h("h2",null,"Secciones a reforzar"), weak.length ? h("ul",null,weak.map(x=>h("li",null,x.s.nombre+" — "+pct(x.a.ok,x.a.tot)+"% ("+x.a.ok+"/"+x.a.tot+")"))) : h("p",{class:"mut"},"Responde preguntas para ver aquí tus puntos débiles.")));
@@ -322,12 +404,12 @@ function vProgreso(){
     h("table",null, h("tr",null,h("th",null,"Fecha"),h("th",null,"Aciertos"),h("th",null,"Nota")), S.exams.slice().reverse().map(e=>h("tr",null,h("td",null,new Date(e.fecha).toLocaleString()),h("td",null,e.ok+"/"+e.total),h("td",{class:pct(e.ok,e.total)>=70?"pass":"fail"},pct(e.ok,e.total)+"%")))) :
     h("p",{class:"mut"},"Aún no has hecho ningún simulacro.")));
   const imp = h("input",{type:"file",accept:"application/json",style:"display:none"});
-  imp.onchange = () => { const f = imp.files[0]; if (!f) return; f.text().then(t=>{ try { const d = JSON.parse(t); if (!d.skills||!d.answers) throw 0; S = d; S.exams = S.exams||[]; save(); go("progreso"); } catch(e){ alert("Archivo no válido."); } }); };
+  imp.onchange = () => { const f = imp.files[0]; if (!f) return; f.text().then(t=>{ try { const d = JSON.parse(t); if (!d.skills||!d.answers) throw 0; S = d; S.exams = S.exams||[]; S.teoria = S.teoria||{}; save(); go("progreso"); } catch(e){ alert("Archivo no válido."); } }); };
   main.append(h("div",{class:"card"}, h("h2",null,"Tus datos"), h("p",{class:"mut"},"Se guardan solo en este navegador. Exporta una copia para llevarla a otro equipo."),
     h("div",{class:"row"},
       h("button",{class:"g",onclick:()=>{ const a=h("a",{href:URL.createObjectURL(new Blob([JSON.stringify(S,null,1)],{type:"application/json"})),download:"dp600-progreso.json"}); a.click(); }},"Exportar progreso"),
       h("button",{class:"g",onclick:()=>imp.click()},"Importar progreso"), imp,
-      h("button",{class:"g",onclick:()=>{ if (confirm("¿Borrar todo tu progreso?")){ S={skills:{},answers:{},exams:[]}; save(); go("progreso"); } }},"Reiniciar"))));
+      h("button",{class:"g",onclick:()=>{ if (confirm("¿Borrar todo tu progreso?")){ S={skills:{},answers:{},exams:[],teoria:{}}; save(); go("progreso"); } }},"Reiniciar"))));
 }
 
 // ---------- Recursos ----------
@@ -344,8 +426,8 @@ function vRecursos(){
 }
 
 topbar();
-const start = location.hash.slice(1);
-go(tabs.some(t=>t[0]===start) ? start : "temario");
+const hp = location.hash.slice(1).split("/");
+go(tabs.some(t=>t[0]===hp[0]) ? hp[0] : "temario", hp[1]);
 })();
 </script>
 </body>
