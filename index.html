@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DP-600 · Estudio</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230f1412'/%3E%3Cpath d='M16 18h32M16 32h32M16 46h20' stroke='%234ade80' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+:root{--bg:#0f1412;--panel:#171e1b;--panel2:#1d2622;--line:#2a3631;--txt:#e6efe9;--mut:#93a39a;--acc:#4ade80;--acc2:#22c55e;--warn:#fbbf24;--bad:#f87171;--ok:#4ade80}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font:15px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{padding:18px 20px 0;max-width:980px;margin:0 auto}
+h1{margin:0;font-size:22px}
+h1 small{color:var(--mut);font-weight:400;font-size:13px;margin-left:8px}
+.top{display:flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:space-between}
+.pill{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:13px;color:var(--mut)}
+.pill b{color:var(--acc)}
+nav{display:flex;gap:4px;margin-top:14px;border-bottom:1px solid var(--line);overflow-x:auto}
+nav button{background:none;border:0;color:var(--mut);padding:10px 14px;font:inherit;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
+nav button.on{color:var(--acc);border-color:var(--acc)}
+main{max-width:980px;margin:0 auto;padding:18px 20px 60px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:14px}
+.card h2,.card h3{margin:0 0 8px}
+h2{font-size:18px}h3{font-size:16px}
+.mut{color:var(--mut)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.sp{flex:1}
+button.b,a.b{background:var(--acc2);color:#04130a;border:0;border-radius:8px;padding:8px 14px;font:inherit;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block}
+button.b:hover,a.b:hover{background:var(--acc)}
+button.g,a.g{background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:7px 12px;font:inherit;cursor:pointer;text-decoration:none;display:inline-block}
+button.g:hover,a.g:hover{border-color:var(--acc)}
+button:disabled{opacity:.45;cursor:not-allowed}
+select,textarea,input[type=text]{background:var(--panel2);color:var(--txt);border:1px solid var(--line);border-radius:8px;padding:7px 10px;font:inherit}
+textarea{width:100%;min-height:70px;resize:vertical}
+.bar{height:8px;background:var(--panel2);border-radius:99px;overflow:hidden}
+.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--acc2),var(--acc))}
+.dom-h{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.peso{color:var(--warn);font-size:13px;font-weight:600}
+details.sec{border-top:1px solid var(--line);padding:10px 0}
+details.sec>summary{cursor:pointer;font-weight:600;list-style:none;display:flex;gap:8px;align-items:center}
+details.sec>summary::before{content:"▸";color:var(--acc)}
+details[open].sec>summary::before{content:"▾"}
+.notas{background:var(--panel2);border-left:3px solid var(--acc);border-radius:6px;padding:8px 14px 8px 26px;margin:10px 0;color:#cfdcd4}
+.notas li{margin:5px 0}
+.skill{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px dashed var(--line)}
+.st{flex:none;width:104px;text-align:center;border-radius:8px;padding:5px 0;font-size:12px;font-weight:700;cursor:pointer;border:1px solid var(--line);background:var(--panel2);color:var(--mut)}
+.st.s1{color:var(--warn);border-color:#6b5517}
+.st.s2{color:#04130a;background:var(--acc2);border-color:var(--acc2)}
+.skill .t{flex:1}
+.skill .acts{display:flex;gap:6px;margin-top:4px;font-size:13px}
+.skill .acts a,.skill .acts span{color:var(--mut);cursor:pointer;text-decoration:none}
+.skill .acts a:hover,.skill .acts span:hover{color:var(--acc)}
+.q{font-size:16px;margin:4px 0 12px}
+.opt{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--line);background:var(--panel2);border-radius:8px;padding:10px 12px;margin:7px 0;cursor:pointer}
+.opt:hover{border-color:var(--acc)}
+.opt input{margin-top:4px}
+.opt.ok{border-color:var(--ok);background:#143021}
+.opt.bad{border-color:var(--bad);background:#35191b}
+.opt.miss{border-color:var(--ok);border-style:dashed}
+.expl{background:var(--panel2);border-radius:8px;padding:10px 14px;margin-top:12px;border-left:3px solid var(--warn)}
+.tag{font-size:12px;border:1px solid var(--line);border-radius:6px;padding:1px 8px;color:var(--mut)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(36px,1fr));gap:6px}
+.grid button{padding:6px 0;border-radius:6px;border:1px solid var(--line);background:var(--panel2);color:var(--txt);cursor:pointer}
+.grid button.done{background:#143021;border-color:var(--acc2)}
+.grid button.cur{outline:2px solid var(--acc)}
+.big{font-size:40px;font-weight:700}
+.pass{color:var(--ok)}.fail{color:var(--bad)}
+table{width:100%;border-collapse:collapse}
+td,th{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left;font-size:14px}
+footer{max-width:980px;margin:0 auto;padding:0 20px 30px;color:var(--mut);font-size:12px}
+</style>
+</head>
+<body>
+<header>
+  <div class="top">
+    <h1>DP-600 · Estudio <small>Fabric Analytics Engineer Associate</small></h1>
+    <div class="row"><span class="pill">Habilidades dominadas: <b id="topSk">0%</b></span><span class="pill">Precisión: <b id="topAcc">–</b></span></div>
+  </div>
+  <nav id="nav"></nav>
+</header>
+<main id="main"></main>
+<footer>Banco de preguntas redactado para práctica (no son preguntas reales del examen). El temario sigue la guía oficial de Microsoft Learn. Tu progreso se guarda solo en este navegador.</footer>
+
+<script src="data/temario.js"></script>
+<script src="data/preguntas.js"></script>
+<script>
+(function(){
+"use strict";
+const T = window.TEMARIO, Q = window.PREGUNTAS;
+const KEY = "dp600.estudio.v1";
+const ST = ["Pendiente","Estudiando","Dominado"];
+
+// ---------- estado ----------
+let S;
+try { S = JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e){ S = {}; }
+S.skills = S.skills || {}; S.answers = S.answers || {}; S.exams = S.exams || [];
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){} topbar(); }
+
+// ---------- utilidades ----------
+function h(tag, attrs, ...kids){
+  const e = document.createElement(tag);
+  if (attrs) for (const k in attrs){
+    const v = attrs[k];
+    if (k === "class") e.className = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (v === true) e.setAttribute(k, "");
+    else if (v !== false && v != null) e.setAttribute(k, v);
+  }
+  for (const c of kids.flat()) if (c != null && c !== false) e.append(c.nodeType ? c : document.createTextNode(c));
+  return e;
+}
+const shuffle = a => { a = a.slice(); for (let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const pct = (a,b) => b ? Math.round(100*a/b) : 0;
+const doms = T.dominios;
+const domById = id => doms.find(d => d.id === id);
+const secs = doms.flatMap(d => d.secciones.map(s => ({...s, dom: d.id})));
+const skillList = doms.flatMap(d => d.secciones.flatMap(s => s.habilidades.map((t,i) => ({id: s.id + "." + (i+1), texto: t, sec: s.id, dom: d.id}))));
+const skState = id => (S.skills[id] && S.skills[id].e) || 0;
+
+function accuracy(filter){
+  let ok=0, tot=0;
+  Q.filter(filter||(()=>true)).forEach(q => { const a = S.answers[q.id]; if (a){ ok += a.ok; tot += a.total; } });
+  return {ok, tot};
+}
+function topbar(){
+  document.getElementById("topSk").textContent = pct(skillList.filter(s => skState(s.id)===2).length, skillList.length) + "%";
+  const a = accuracy(); document.getElementById("topAcc").textContent = a.tot ? pct(a.ok,a.tot)+"%" : "–";
+}
+
+// ---------- navegación ----------
+const tabs = [["temario","Temario"],["practica","Práctica"],["simulacro","Simulacro"],["progreso","Progreso"],["recursos","Recursos"]];
+const main = document.getElementById("main"), nav = document.getElementById("nav");
+let current = "temario";
+function go(t){
+  current = t; location.hash = t;
+  nav.innerHTML = ""; tabs.forEach(([k,l]) => nav.append(h("button",{class:k===t?"on":"",onclick:()=>go(k)},l)));
+  main.innerHTML = "";
+  ({temario:vTemario,practica:vPractica,simulacro:vSimulacro,progreso:vProgreso,recursos:vRecursos}[t])();
+  window.scrollTo(0,0);
+}
+
+// ---------- Temario ----------
+function vTemario(){
+  main.append(h("p",{class:"mut"},"Temario oficial (guía actualizada el "+T.actualizado+"). Marca tu avance en cada habilidad, añade notas propias y practica por sección."));
+  doms.forEach(d => {
+    const sk = skillList.filter(s => s.dom===d.id);
+    const dom = sk.filter(s => skState(s.id)===2).length;
+    const card = h("div",{class:"card"},
+      h("div",{class:"dom-h"}, h("h2",null,d.nombre), h("span",{class:"peso"},"Peso "+d.peso)),
+      h("div",{class:"row"}, h("div",{class:"bar sp"},h("i",{style:"width:"+pct(dom,sk.length)+"%"})), h("span",{class:"mut"},dom+"/"+sk.length+" dominadas"))
+    );
+    d.secciones.forEach(s => {
+      const nq = Q.filter(q => q.seccion===s.id).length;
+      const det = h("details",{class:"sec"});
+      det.append(h("summary",null, s.nombre, h("span",{class:"tag"}, nq+" preguntas")));
+      det.append(h("ul",{class:"notas"}, s.notas.map(n => h("li",null,n))));
+      s.habilidades.forEach((t,i) => {
+        const id = s.id+"."+(i+1);
+        const btn = h("div",{class:"st s"+skState(id),title:"Clic para cambiar estado"}, ST[skState(id)]);
+        btn.onclick = () => { S.skills[id] = S.skills[id]||{}; S.skills[id].e = (skState(id)+1)%3; save(); go("temario"); };
+        const note = h("textarea",{placeholder:"Mis notas…",style:"display:none;margin-top:6px"});
+        note.value = (S.skills[id] && S.skills[id].n) || "";
+        note.oninput = () => { S.skills[id] = S.skills[id]||{}; S.skills[id].n = note.value; save(); };
+        const noteBtn = h("span",null, (S.skills[id] && S.skills[id].n) ? "📝 Mis notas ●" : "📝 Mis notas");
+        noteBtn.onclick = () => { note.style.display = note.style.display==="none" ? "block":"none"; };
+        det.append(h("div",{class:"skill"}, btn,
+          h("div",{class:"t"}, t,
+            h("div",{class:"acts"},
+              h("a",{href:"https://learn.microsoft.com/en-us/search/?terms="+encodeURIComponent(t),target:"_blank",rel:"noopener"},"📖 Buscar en Learn"), noteBtn),
+            note)));
+      });
+      if (nq) det.append(h("div",{style:"margin-top:10px"}, h("button",{class:"g",onclick:()=>{ pFilter={dom:d.id,sec:s.id,modo:"todas"}; go("practica"); }},"Practicar esta sección")));
+      card.append(det);
+    });
+    main.append(card);
+  });
+}
+
+// ---------- motor de pregunta ----------
+function renderQ(q, opts){
+  // opts: {checked:fn(resultado), preset:{sel:[...]}, locked:bool, order}
+  const order = opts.order || shuffle(q.opciones.map((_,i)=>i));
+  const multi = q.correctas.length > 1;
+  const sel = new Set(opts.sel || []);
+  const box = h("div");
+  box.append(h("div",{class:"row"}, h("span",{class:"tag"},domById(q.dominio).nombre.split(",")[0]), h("span",{class:"tag"},secs.find(s=>s.id===q.seccion).nombre), multi?h("span",{class:"tag"},"Selecciona "+q.correctas.length):null));
+  box.append(h("div",{class:"q"},q.pregunta));
+  const list = h("div");
+  const items = order.map(i => {
+    const inp = h("input",{type:multi?"checkbox":"radio",name:"opt_"+q.id});
+    if (sel.has(i)) inp.checked = true;
+    inp.onchange = () => { if (!multi) sel.clear(); inp.checked ? sel.add(i) : sel.delete(i); opts.onsel && opts.onsel([...sel]); };
+    const lab = h("label",{class:"opt"}, inp, h("span",null,q.opciones[i]));
+    list.append(lab); return {i,inp,lab};
+  });
+  box.append(list);
+  const fb = h("div"); box.append(fb);
+  function reveal(){
+    items.forEach(({i,inp,lab}) => {
+      inp.disabled = true;
+      const right = q.correctas.includes(i), chosen = sel.has(i);
+      if (chosen && right) lab.classList.add("ok");
+      else if (chosen && !right) lab.classList.add("bad");
+      else if (!chosen && right) lab.classList.add("miss");
+    });
+    const ok = sel.size===q.correctas.length && q.correctas.every(c=>sel.has(c));
+    fb.append(h("div",{class:"expl"}, h("b",{class:ok?"pass":"fail"}, ok?"✔ Correcto. ":"✘ Incorrecto. "), q.explicacion));
+    return ok;
+  }
+  return {el:box, sel:()=>[...sel], reveal, order};
+}
+function isOk(q, sel){ return sel.length===q.correctas.length && q.correctas.every(c=>sel.includes(c)); }
+function record(q, ok){
+  const a = S.answers[q.id] || {ok:0,total:0,last:null};
+  a.total++; if (ok) a.ok++; a.last = ok; S.answers[q.id] = a; save();
+}
+
+// ---------- Práctica ----------
+let pFilter = {dom:"todos",sec:"todas",modo:"todas"};
+function vPractica(){
+  const selD = h("select",null, h("option",{value:"todos"},"Todos los dominios"), doms.map(d=>h("option",{value:d.id},d.nombre)));
+  const selS = h("select");
+  const selM = h("select",null, ["todas|Todas","nuevas|Solo no respondidas","falladas|Solo las falladas la última vez"].map(x=>{const[v,l]=x.split("|");return h("option",{value:v},l);}));
+  function fillS(){ selS.innerHTML=""; selS.append(h("option",{value:"todas"},"Todas las secciones")); secs.filter(s=>selD.value==="todos"||s.dom===selD.value).forEach(s=>selS.append(h("option",{value:s.id},s.nombre))); }
+  selD.value = pFilter.dom; fillS(); selS.value = pFilter.sec; selM.value = pFilter.modo;
+  selD.onchange = () => { fillS(); };
+  const area = h("div");
+  const start = h("button",{class:"b",onclick:()=>{
+    pFilter = {dom:selD.value,sec:selS.value,modo:selM.value};
+    let pool = Q.filter(q => (pFilter.dom==="todos"||q.dominio===pFilter.dom) && (pFilter.sec==="todas"||q.seccion===pFilter.sec));
+    if (pFilter.modo==="nuevas") pool = pool.filter(q=>!S.answers[q.id]);
+    if (pFilter.modo==="falladas") pool = pool.filter(q=>S.answers[q.id] && S.answers[q.id].last===false);
+    if (!pool.length){ area.innerHTML=""; area.append(h("div",{class:"card"},"No hay preguntas con ese filtro. Prueba con otro.")); return; }
+    runPractice(area, shuffle(pool));
+  }},"Empezar");
+  main.append(h("div",{class:"card"}, h("h2",null,"Práctica por tema"), h("p",{class:"mut"},"Respuesta y explicación inmediata. Banco actual: "+Q.length+" preguntas."), h("div",{class:"row"},selD,selS,selM,start)), area);
+}
+function runPractice(area, queue){
+  let idx = 0, good = 0;
+  function show(){
+    area.innerHTML = "";
+    if (idx >= queue.length){
+      area.append(h("div",{class:"card"}, h("h2",null,"Sesión terminada"), h("div",{class:"big"},pct(good,queue.length)+"%"), h("p",{class:"mut"},good+" de "+queue.length+" correctas."))); return;
+    }
+    const q = queue[idx], r = renderQ(q,{});
+    const chk = h("button",{class:"b"},"Comprobar"), nxt = h("button",{class:"g",style:"display:none"}, idx<queue.length-1?"Siguiente →":"Ver resultado");
+    chk.onclick = () => { if (!r.sel().length) return; const ok = r.reveal(); record(q,ok); if (ok) good++; chk.style.display="none"; nxt.style.display="inline-block"; };
+    nxt.onclick = () => { idx++; show(); };
+    area.append(h("div",{class:"card"}, h("div",{class:"mut"},"Pregunta "+(idx+1)+" de "+queue.length), r.el, h("div",{class:"row",style:"margin-top:12px"},chk,nxt)));
+  }
+  show();
+}
+
+// ---------- Simulacro ----------
+let timer = null;
+function vSimulacro(){
+  const area = h("div");
+  const N = Math.min(30, Q.length), MIN = 45;
+  main.append(h("div",{class:"card"}, h("h2",null,"Simulacro de examen"),
+    h("p",{class:"mut"},N+" preguntas, "+MIN+" minutos, distribuidas según el peso de cada dominio. Sin explicaciones hasta el final. Referencia de aprobado: 70%."),
+    h("button",{class:"b",onclick:()=>startExam(area,N,MIN)},"Iniciar simulacro")), area);
+}
+function pickExam(N){
+  const w = {d1:.125,d2:.425,d3:.225,d4:.225};
+  let picked = [];
+  doms.forEach(d => { const n = Math.round(N*w[d.id]); picked.push(...shuffle(Q.filter(q=>q.dominio===d.id)).slice(0,n)); });
+  if (picked.length > N) picked = shuffle(picked).slice(0,N);
+  if (picked.length < N){ const ids = new Set(picked.map(q=>q.id)); picked.push(...shuffle(Q.filter(q=>!ids.has(q.id))).slice(0,N-picked.length)); }
+  return shuffle(picked);
+}
+function startExam(area,N,MIN){
+  if (timer) clearInterval(timer);
+  const qs = pickExam(N), sel = qs.map(()=>[]), orders = qs.map(q=>shuffle(q.opciones.map((_,i)=>i)));
+  let i = 0, end = Date.now()+MIN*60000, over = false;
+  const clock = h("span",{class:"pill"});
+  function tick(){ const left = Math.max(0,end-Date.now()); clock.textContent = "⏱ "+String(Math.floor(left/60000)).padStart(2,"0")+":"+String(Math.floor(left/1000)%60).padStart(2,"0"); if (!left && !over){ finish(); } }
+  function show(){
+    area.innerHTML = "";
+    const r = renderQ(qs[i],{sel:sel[i],order:orders[i],onsel:s=>{sel[i]=s; paintGrid();}});
+    const grid = h("div",{class:"grid"});
+    function paintGrid(){ grid.innerHTML=""; qs.forEach((_,k)=>grid.append(h("button",{class:(sel[k].length?"done ":"")+(k===i?"cur":""),onclick:()=>{i=k;show();}},k+1))); }
+    paintGrid();
+    area.append(h("div",{class:"card"}, h("div",{class:"row"}, h("span",{class:"mut"},"Pregunta "+(i+1)+" de "+qs.length), h("span",{class:"sp"}), clock),
+      r.el, h("div",{class:"row",style:"margin-top:12px"},
+        h("button",{class:"g",disabled:i===0,onclick:()=>{i--;show();}},"← Anterior"),
+        h("button",{class:"g",disabled:i===qs.length-1,onclick:()=>{i++;show();}},"Siguiente →"),
+        h("span",{class:"sp"}),
+        h("button",{class:"b",onclick:()=>{ const sin = sel.filter(s=>!s.length).length; if (!sin || confirm("Te quedan "+sin+" sin responder. ¿Finalizar?")) finish(); }},"Finalizar"))),
+      h("div",{class:"card"}, grid));
+  }
+  function finish(){
+    over = true; clearInterval(timer);
+    let ok = 0; const byDom = {};
+    qs.forEach((q,k)=>{ const good = isOk(q,sel[k]); record(q,good); if (good) ok++; byDom[q.dominio] = byDom[q.dominio]||{ok:0,t:0}; byDom[q.dominio].t++; if (good) byDom[q.dominio].ok++; });
+    S.exams.push({fecha:new Date().toISOString(), ok, total:qs.length, byDom}); save();
+    area.innerHTML = "";
+    const p = pct(ok,qs.length);
+    area.append(h("div",{class:"card"}, h("h2",null,"Resultado"), h("div",{class:"big "+(p>=70?"pass":"fail")},p+"%"),
+      h("p",{class:"mut"},ok+" de "+qs.length+" correctas · "+(p>=70?"por encima":"por debajo")+" de la referencia del 70%."),
+      h("table",null, doms.map(d=>{const b=byDom[d.id]||{ok:0,t:0}; return h("tr",null,h("td",null,d.nombre),h("td",null,b.ok+"/"+b.t),h("td",null,b.t?pct(b.ok,b.t)+"%":"–"));}))));
+    qs.forEach((q,k)=>{ const r = renderQ(q,{sel:sel[k],order:orders[k]}); r.reveal(); area.append(h("div",{class:"card"}, h("div",{class:"mut"},"Pregunta "+(k+1)), r.el)); });
+    window.scrollTo(0,0);
+  }
+  tick(); timer = setInterval(tick,1000); show();
+}
+
+// ---------- Progreso ----------
+function vProgreso(){
+  const c = h("div",{class:"card"}, h("h2",null,"Progreso por dominio"));
+  doms.forEach(d=>{
+    const sk = skillList.filter(s=>s.dom===d.id), dom = sk.filter(s=>skState(s.id)===2).length, est = sk.filter(s=>skState(s.id)===1).length;
+    const a = accuracy(q=>q.dominio===d.id), nq = Q.filter(q=>q.dominio===d.id);
+    c.append(h("div",{style:"margin:14px 0"}, h("div",{class:"dom-h"}, h("b",null,d.nombre), h("span",{class:"peso"},d.peso)),
+      h("div",{class:"row"}, h("span",{class:"mut",style:"width:150px"},"Habilidades: "+dom+"/"+sk.length+(est?" (+"+est+" en curso)":"")), h("div",{class:"bar sp"},h("i",{style:"width:"+pct(dom,sk.length)+"%"}))),
+      h("div",{class:"row"}, h("span",{class:"mut",style:"width:150px"},"Precisión: "+(a.tot?pct(a.ok,a.tot)+"%":"–")), h("div",{class:"bar sp"},h("i",{style:"width:"+pct(a.ok,a.tot)+"%"}))),
+      h("div",{class:"mut"},"Preguntas respondidas: "+nq.filter(q=>S.answers[q.id]).length+"/"+nq.length)));
+  });
+  main.append(c);
+  const weak = secs.map(s=>({s,a:accuracy(q=>q.seccion===s.id)})).filter(x=>x.a.tot).sort((x,y)=>pct(x.a.ok,x.a.tot)-pct(y.a.ok,y.a.tot)).slice(0,3);
+  main.append(h("div",{class:"card"}, h("h2",null,"Secciones a reforzar"), weak.length ? h("ul",null,weak.map(x=>h("li",null,x.s.nombre+" — "+pct(x.a.ok,x.a.tot)+"% ("+x.a.ok+"/"+x.a.tot+")"))) : h("p",{class:"mut"},"Responde preguntas para ver aquí tus puntos débiles.")));
+  main.append(h("div",{class:"card"}, h("h2",null,"Historial de simulacros"), S.exams.length ?
+    h("table",null, h("tr",null,h("th",null,"Fecha"),h("th",null,"Aciertos"),h("th",null,"Nota")), S.exams.slice().reverse().map(e=>h("tr",null,h("td",null,new Date(e.fecha).toLocaleString()),h("td",null,e.ok+"/"+e.total),h("td",{class:pct(e.ok,e.total)>=70?"pass":"fail"},pct(e.ok,e.total)+"%")))) :
+    h("p",{class:"mut"},"Aún no has hecho ningún simulacro.")));
+  const imp = h("input",{type:"file",accept:"application/json",style:"display:none"});
+  imp.onchange = () => { const f = imp.files[0]; if (!f) return; f.text().then(t=>{ try { const d = JSON.parse(t); if (!d.skills||!d.answers) throw 0; S = d; S.exams = S.exams||[]; save(); go("progreso"); } catch(e){ alert("Archivo no válido."); } }); };
+  main.append(h("div",{class:"card"}, h("h2",null,"Tus datos"), h("p",{class:"mut"},"Se guardan solo en este navegador. Exporta una copia para llevarla a otro equipo."),
+    h("div",{class:"row"},
+      h("button",{class:"g",onclick:()=>{ const a=h("a",{href:URL.createObjectURL(new Blob([JSON.stringify(S,null,1)],{type:"application/json"})),download:"dp600-progreso.json"}); a.click(); }},"Exportar progreso"),
+      h("button",{class:"g",onclick:()=>imp.click()},"Importar progreso"), imp,
+      h("button",{class:"g",onclick:()=>{ if (confirm("¿Borrar todo tu progreso?")){ S={skills:{},answers:{},exams:[]}; save(); go("progreso"); } }},"Reiniciar"))));
+}
+
+// ---------- Recursos ----------
+function vRecursos(){
+  const L = [
+    ["Guía de estudio oficial DP-600 (habilidades evaluadas)", T.fuente],
+    ["Página del examen DP-600", "https://learn.microsoft.com/en-us/credentials/certifications/exams/dp-600"],
+    ["Documentación de Microsoft Fabric", "https://learn.microsoft.com/en-us/fabric/"],
+    ["Documentación de Power BI", "https://learn.microsoft.com/en-us/power-bi/"],
+    ["Referencia DAX", "https://learn.microsoft.com/en-us/dax/"]
+  ];
+  main.append(h("div",{class:"card"}, h("h2",null,"Material oficial"), h("ul",null,L.map(([t,u])=>h("li",null,h("a",{href:u,target:"_blank",rel:"noopener",style:"color:var(--acc)"},t)))),
+    h("p",{class:"mut"},"Microsoft indica que la Practice Assessment nueva está en AI Skills Navigator y que la versión antigua de Microsoft Learn ya no se actualiza. Busca allí la evaluación de práctica oficial para complementar este banco.")));
+}
+
+topbar();
+const start = location.hash.slice(1);
+go(tabs.some(t=>t[0]===start) ? start : "temario");
+})();
+</script>
+</body>
+</html>
