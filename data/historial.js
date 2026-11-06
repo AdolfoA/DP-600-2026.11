@@ -1,6 +1,20 @@
 // Generado por tools/gen_historial.sh
 window.HISTORIAL = [
  {
+  "sha": "932802e76db59b36b89079b61c716c79c965e766",
+  "autor": "Claude",
+  "fecha": "2026-11-06T17:09:50-04:00",
+  "msg": "Temario, dominios, secciones, habilidades y fuentes traducidos al español (con el original en inglés debajo)",
+  "cuerpo": ""
+ },
+ {
+  "sha": "0d150bd7559de06ae93dfe9b8663b5c9aa9aab42",
+  "autor": "Claude",
+  "fecha": "2026-11-06T17:05:01-04:00",
+  "msg": "Actualiza instantánea del historial",
+  "cuerpo": ""
+ },
+ {
   "sha": "d8cc16fbdfdacc55e609edd8d60b74fba7a0d513",
   "autor": "Claude",
   "fecha": "2026-11-06T17:05:01-04:00",
