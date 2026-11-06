@@ -1,6 +1,20 @@
 // Generado por tools/gen_historial.sh
 window.HISTORIAL = [
  {
+  "sha": "76463e1b34530b41ded801957910f937de69c432",
+  "autor": "Claude",
+  "fecha": "2026-11-06T17:01:52-04:00",
+  "msg": "Cada módulo muestra todas las unidades oficiales de Learn (introducción, ejercicio, evaluación, resumen) con enlace por unidad",
+  "cuerpo": ""
+ },
+ {
+  "sha": "808dab96f2e9e06ef92f5d14e5645d92aa032924",
+  "autor": "Claude",
+  "fecha": "2026-11-06T16:51:52-04:00",
+  "msg": "Actualiza instantánea del historial",
+  "cuerpo": ""
+ },
+ {
   "sha": "08c5875306d41769f17e56a4dbe09e5dd2caded7",
   "autor": "Claude",
   "fecha": "2026-11-06T16:51:52-04:00",
