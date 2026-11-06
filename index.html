@@ -166,6 +166,7 @@ function go(t, arg){
 
 // ---------- Temario ----------
 function vTemario(){
+  main.append(fuentesCard(false));
   main.append(h("p",{class:"mut"},"Temario oficial (guía actualizada el "+T.actualizado+"). Marca tu avance en cada habilidad, añade notas propias y practica por sección."));
   doms.forEach(d => {
     const sk = skillList.filter(s => s.dom===d.id);
@@ -245,6 +246,41 @@ function record(q, ok){
 }
 
 
+// ---------- Fuentes ----------
+const FUENTES = [
+  ["Examen y guía oficial", [
+    ["Página del examen DP-600", "https://learn.microsoft.com/en-us/credentials/certifications/exams/dp-600"],
+    ["Certificación Fabric Analytics Engineer Associate", "https://learn.microsoft.com/en-us/credentials/certifications/fabric-analytics-engineer-associate/"],
+    ["Guía de estudio oficial (habilidades evaluadas)", "https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/dp-600"],
+    ["Practice Assessment nueva (AI Skills Navigator)", "http://aka.ms/DP600-PA"],
+    ["Practice Assessment anterior (Learn, ya no se actualiza)", "https://aka.ms/DP600-LearnPA"],
+    ["Exam Sandbox (demo de la interfaz del examen)", "https://go.microsoft.com/fwlink/?linkid=2226877"],
+    ["Videos de preparación del examen", "https://aka.ms/DP600-ExamPrep"]
+  ]],
+  ["Rutas de aprendizaje de Microsoft Learn usadas en la Teoría", [
+    ["Get started with Microsoft Fabric (base recomendada)", "https://learn.microsoft.com/en-us/training/paths/get-started-fabric/"],
+    ["Implement a Lakehouse with Microsoft Fabric", "https://learn.microsoft.com/en-us/training/paths/implement-lakehouse-microsoft-fabric/"],
+    ["Implement a data warehouse with Microsoft Fabric", "https://learn.microsoft.com/en-us/training/paths/work-with-data-warehouses-using-microsoft-fabric/"],
+    ["Work with semantic models in Microsoft Fabric", "https://learn.microsoft.com/en-us/training/paths/work-semantic-models-microsoft-fabric/"],
+    ["Manage a Microsoft Fabric environment", "https://learn.microsoft.com/en-us/training/paths/manage-microsoft-fabric-environment/"],
+    ["Secure and govern analytics data in Microsoft Fabric", "https://learn.microsoft.com/en-us/training/paths/secure-govern-analytics-data/"]
+  ]],
+  ["Documentación de referencia", [
+    ["Documentación de Microsoft Fabric", "https://learn.microsoft.com/en-us/fabric/"],
+    ["Administración y gobierno de Fabric", "https://learn.microsoft.com/en-us/fabric/admin/"],
+    ["Documentación de Power BI", "https://learn.microsoft.com/en-us/power-bi/"],
+    ["Referencia DAX", "https://learn.microsoft.com/en-us/dax/"]
+  ]]
+];
+function fuentesCard(abierto){
+  const d = h("details",{class:"card",open:abierto});
+  d.append(h("summary",{style:"cursor:pointer;font-weight:700;font-size:16px"},"📚 Fuentes oficiales (consúltalas antes de empezar)"));
+  d.append(h("p",{class:"mut"},"Todo el contenido de esta app se basa en estas fuentes. Si algo cambia, la referencia válida es siempre la de Microsoft."));
+  FUENTES.forEach(([t,l])=>{ d.append(h("div",{class:"ruta"},t), h("ul",null,l.map(([n,u])=>h("li",null,h("a",{href:u,target:"_blank",rel:"noopener",style:"color:var(--acc)"},n))))); });
+  d.append(h("p",{class:"mut"},"Guía de estudio consultada: actualizada el "+T.actualizado+". El enlace de cada módulo concreto aparece dentro de su lección."));
+  return d;
+}
+
 // ---------- Teoría ----------
 const uKey = (m,i) => m.id + ":" + i;
 const modProg = m => { const r = m.unidades.filter((_,i)=>S.teoria[uKey(m,i)]).length; return {r, t:m.unidades.length}; };
@@ -261,6 +297,7 @@ function vTeoria(id){
   const m = id && M.find(x=>x.id===id);
   if (!m){
     const tot = M.reduce((a,x)=>a+modProg(x).t,0), rd = M.reduce((a,x)=>a+modProg(x).r,0);
+    main.append(fuentesCard(true));
     main.append(h("div",{class:"card"}, h("h2",null,"Teoría estructurada según la ruta oficial de Microsoft Learn"),
       h("p",{class:"mut"},"Cada módulo replica la estructura del módulo original (objetivos y unidades) con un resumen propio en español. Los módulos «Complementos» cubren habilidades de la guía que Learn no desarrolla en un módulo concreto. Abre el módulo original para el texto completo, laboratorios y evaluación."),
       h("div",{class:"row"}, h("div",{class:"bar sp"},h("i",{style:"width:"+pct(rd,tot)+"%"})), h("span",{class:"mut"},rd+"/"+tot+" lecciones leídas"))));
@@ -414,15 +451,8 @@ function vProgreso(){
 
 // ---------- Recursos ----------
 function vRecursos(){
-  const L = [
-    ["Guía de estudio oficial DP-600 (habilidades evaluadas)", T.fuente],
-    ["Página del examen DP-600", "https://learn.microsoft.com/en-us/credentials/certifications/exams/dp-600"],
-    ["Documentación de Microsoft Fabric", "https://learn.microsoft.com/en-us/fabric/"],
-    ["Documentación de Power BI", "https://learn.microsoft.com/en-us/power-bi/"],
-    ["Referencia DAX", "https://learn.microsoft.com/en-us/dax/"]
-  ];
-  main.append(h("div",{class:"card"}, h("h2",null,"Material oficial"), h("ul",null,L.map(([t,u])=>h("li",null,h("a",{href:u,target:"_blank",rel:"noopener",style:"color:var(--acc)"},t)))),
-    h("p",{class:"mut"},"Microsoft indica que la Practice Assessment nueva está en AI Skills Navigator y que la versión antigua de Microsoft Learn ya no se actualiza. Busca allí la evaluación de práctica oficial para complementar este banco.")));
+  main.append(fuentesCard(true));
+  main.append(h("div",{class:"card"}, h("p",{class:"mut"},"Microsoft indica que la Practice Assessment nueva está en AI Skills Navigator y que la versión anterior de Microsoft Learn ya no se actualiza.")));
 }
 
 topbar();
