@@ -94,7 +94,7 @@ footer{max-width:980px;margin:0 auto;padding:0 20px 30px;color:var(--mut);font-s
 <header>
   <div class="top">
     <h1>DP-600 · Estudio <small>Fabric Analytics Engineer Associate</small></h1>
-    <div class="row"><span class="pill">Habilidades dominadas: <b id="topSk">0%</b></span><span class="pill">Precisión: <b id="topAcc">–</b></span></div>
+    <div class="row"><span class="pill" id="topUpd" title="Fecha del último cambio del repo">Actualizado: <b>–</b></span><span class="pill">Habilidades dominadas: <b id="topSk">0%</b></span><span class="pill">Precisión: <b id="topAcc">–</b></span></div>
   </div>
   <nav id="nav"></nav>
 </header>
@@ -110,6 +110,7 @@ footer{max-width:980px;margin:0 auto;padding:0 20px 30px;color:var(--mut);font-s
 <script src="data/teoria_complementos.js"></script>
 <script src="data/teoria_syllabus.js"></script>
 <script src="data/traducciones.js"></script>
+<script src="data/historial.js"></script>
 <script>
 (function(){
 "use strict";
@@ -169,14 +170,14 @@ function topbar(){
 }
 
 // ---------- navegación ----------
-const tabs = [["temario","Temario"],["teoria","Teoría"],["practica","Práctica"],["simulacro","Simulacro"],["progreso","Progreso"],["recursos","Recursos"]];
+const tabs = [["temario","Temario"],["teoria","Teoría"],["practica","Práctica"],["simulacro","Simulacro"],["progreso","Progreso"],["recursos","Recursos"],["site","Site"]];
 const main = document.getElementById("main"), nav = document.getElementById("nav");
 let current = "temario";
 function go(t, arg){
   current = t; location.hash = t + (arg ? "/" + arg : "");
   nav.innerHTML = ""; tabs.forEach(([k,l]) => nav.append(h("button",{class:k===t?"on":"",onclick:()=>go(k)},l)));
   main.innerHTML = "";
-  ({temario:vTemario,teoria:()=>vTeoria(arg),practica:vPractica,simulacro:vSimulacro,progreso:vProgreso,recursos:vRecursos}[t])();
+  ({temario:vTemario,teoria:()=>vTeoria(arg),practica:vPractica,simulacro:vSimulacro,progreso:vProgreso,recursos:vRecursos,site:vSite}[t])();
   window.scrollTo(0,0);
 }
 
@@ -476,6 +477,44 @@ function vProgreso(){
 }
 
 // ---------- Recursos ----------
+// ---------- Site: historial de commits ----------
+const REPO = "AdolfoA/DP-600-2026.11";
+const fmtF = iso => { const d=new Date(iso); return isNaN(d)?"–":d.toLocaleDateString("es",{day:"2-digit",month:"long",year:"numeric"})+" · "+d.toLocaleTimeString("es",{hour:"2-digit",minute:"2-digit"}); };
+const fmtC = iso => { const d=new Date(iso); return isNaN(d)?"–":d.toLocaleDateString("es",{day:"2-digit",month:"short",year:"numeric"}); };
+function setUpd(iso){ const b=document.querySelector("#topUpd b"); if(b) b.textContent=fmtC(iso); }
+let COMMITS = (window.HISTORIAL||[]).slice(), VIVO = false;
+if (COMMITS[0]) setUpd(COMMITS[0].fecha);
+async function cargarVivo(){
+  try{
+    const r = await fetch("https://api.github.com/repos/"+REPO+"/commits?per_page=100",{headers:{Accept:"application/vnd.github+json"}});
+    if(!r.ok) throw 0;
+    const j = await r.json();
+    COMMITS = j.map(c=>({sha:c.sha,autor:c.commit.author.name,fecha:c.commit.author.date,msg:c.commit.message.split("\n")[0],
+      cuerpo:c.commit.message.split("\n").slice(1).filter(l=>!/^(Co-Authored-By|Claude-Session)/.test(l)).join("\n").trim()}));
+    VIVO = true; setUpd(COMMITS[0].fecha); return true;
+  }catch(e){ return false; }
+}
+cargarVivo();
+function vSite(){
+  const ult = COMMITS[0];
+  const lista = h("div");
+  const pinta = () => {
+    lista.innerHTML = "";
+    COMMITS.forEach(c => lista.append(h("div",{class:"card"},
+      h("div",{class:"row"}, h("b",null,c.msg), h("span",{class:"sp"}), h("a",{href:"https://github.com/"+REPO+"/commit/"+c.sha,target:"_blank",rel:"noopener",style:"color:var(--acc)"},c.sha.slice(0,7)+" ↗")),
+      h("div",{class:"mut"},fmtF(c.fecha)+" · "+c.autor),
+      c.cuerpo ? h("p",{class:"mut",style:"white-space:pre-wrap;margin:6px 0 0"},c.cuerpo) : null)));
+    estado.textContent = (VIVO ? "Datos en vivo desde GitHub" : "Instantánea guardada en el sitio (puede no incluir los últimos cambios)")+" · "+COMMITS.length+" commits";
+  };
+  const estado = h("span",{class:"mut"});
+  main.append(h("div",{class:"card"}, h("h2",null,"Site · historial de cambios"),
+    h("p",{class:"mut"},"Última actualización: "+(ult?fmtF(ult.fecha):"–")+". Contenido del temario según Microsoft: "+T.actualizado+"."),
+    h("div",{class:"row"}, h("a",{class:"g",href:"https://github.com/"+REPO,target:"_blank",rel:"noopener"},"Repositorio ↗"), h("a",{class:"g",href:"https://github.com/"+REPO+"/commits/main",target:"_blank",rel:"noopener"},"Ver en GitHub ↗"),
+      h("button",{class:"g",onclick:async()=>{estado.textContent="Actualizando…"; await cargarVivo(); pinta();}},"Actualizar"), estado)), lista);
+  pinta();
+  if(!VIVO) cargarVivo().then(ok=>{ if(ok && document.body.contains(lista)) pinta(); });
+}
+
 function vRecursos(){
   main.append(fuentesCard(true));
   main.append(h("div",{class:"card"}, h("p",{class:"mut"},"Microsoft indica que la Practice Assessment nueva está en AI Skills Navigator y que la versión anterior de Microsoft Learn ya no se actualiza.")));

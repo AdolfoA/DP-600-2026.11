@@ -52,3 +52,7 @@ La Teoría sigue el árbol de "Prepare for the exam" de la página de certificac
 5. Secure and govern analytics data in Microsoft Fabric
 
 Al final hay un grupo "Material de apoyo" con módulos de rutas anteriores que cubren habilidades de la guía de estudio no desarrolladas en el syllabus. Los textos son resúmenes propios en español; el contenido completo está en los enlaces de Microsoft Learn. Los módulos de IA (Fabric IQ) son recientes y no figuran en las habilidades de la guía.
+
+## Pestaña Site
+
+Muestra la fecha de actualización y el historial de commits. Lee GitHub en vivo y, sin conexión, usa la instantánea `data/historial.js`. Para regenerarla antes de un commit: `sh tools/gen_historial.sh`.
